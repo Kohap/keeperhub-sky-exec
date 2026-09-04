@@ -225,7 +225,7 @@ function Home() {
       {fixtureBanner ? (
         <div
           role="status"
-          className="rounded-lg bg-surface-2 px-4 py-3 text-sm leading-normal text-fg shadow-border"
+          className="motion-enter rounded-lg bg-surface-2 px-4 py-3 text-sm leading-normal text-fg shadow-border"
         >
           Fixture mode. Empty key — hashes here are the recorded KeeperHub
           execute, not a new broadcast.
@@ -236,7 +236,7 @@ function Home() {
 
       <section className="grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
         <div
-          className="rounded-xl bg-surface p-4 shadow-border"
+          className="surface-hover rounded-xl bg-surface p-4 shadow-border"
           aria-busy={busy !== null}
         >
           <div className="mb-4 flex items-center justify-between gap-3">
@@ -245,7 +245,7 @@ function Home() {
             </h2>
             <label
               className={cn(
-                "flex min-h-11 items-center gap-2 rounded-md px-2 font-mono text-2xs focus-within:ring-2 focus-within:ring-ring",
+                "flex min-h-11 items-center gap-2 rounded-md px-2 font-mono text-2xs transition-colors duration-(--motion-fast) ease-(--ease-out) focus-within:ring-2 focus-within:ring-ring",
                 killSwitch ? "bg-danger/10 text-danger" : "text-muted",
               )}
             >
@@ -269,7 +269,7 @@ function Home() {
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             rows={3}
-            className="w-full resize-y rounded-md bg-bg px-3 py-3 font-mono text-sm text-fg shadow-border outline-none ring-ring focus:ring-2"
+            className="w-full resize-y rounded-md bg-bg px-3 py-3 font-mono text-sm text-fg shadow-border outline-none ring-ring transition-[box-shadow] duration-(--motion-quick) ease-(--ease-out) focus:ring-2"
           />
           <div className="mt-3 flex flex-wrap gap-2">
             <Button
@@ -314,7 +314,7 @@ function Home() {
                     /* ignore */
                   }
                 }}
-                className="h-11 w-full rounded-md bg-bg px-3 font-mono text-sm text-fg shadow-border outline-none ring-ring focus:ring-2"
+                className="h-11 w-full rounded-md bg-bg px-3 font-mono text-sm text-fg shadow-border outline-none ring-ring transition-[box-shadow] duration-(--motion-quick) ease-(--ease-out) focus:ring-2"
               />
               <Button
                 type="button"
@@ -376,18 +376,18 @@ function Home() {
           <p
             role="status"
             aria-live="polite"
-            className="mt-2 min-h-5 text-xs text-muted"
+            className="mt-2 min-h-5 text-xs text-muted transition-opacity duration-(--motion-micro) ease-(--ease-out)"
           >
             {liveMessage}
           </p>
           {last?.error === "policy_reject" && last.policy.allow === false ? (
-            <p className="mt-4 flex items-start gap-2 rounded-md bg-danger/10 px-3 py-2 text-sm text-fg shadow-border">
+            <p className="mt-4 motion-enter flex items-start gap-2 rounded-md bg-danger/10 px-3 py-2 text-sm text-fg shadow-border">
               <Skull className="mt-0.5 size-4 shrink-0 text-danger" aria-hidden />
               {last.policy.reason}
             </p>
           ) : null}
           {last?.error === "dry_run_fail" ? (
-            <p className="mt-4 flex items-start gap-2 rounded-md bg-danger/10 px-3 py-2 text-sm text-fg shadow-border">
+            <p className="mt-4 motion-enter flex items-start gap-2 rounded-md bg-danger/10 px-3 py-2 text-sm text-fg shadow-border">
               <CircleAlert className="mt-0.5 size-4 shrink-0 text-danger" aria-hidden />
               {last.dryRun?.error ?? "Dry-run failed. Execute skipped."}
             </p>
@@ -406,8 +406,8 @@ function Home() {
                   ? "step"
                   : undefined
               }
-              className={cn(
-                "rounded-lg bg-surface px-4 py-4 shadow-border",
+            className={cn(
+                "surface-hover rounded-lg bg-surface px-4 py-4 shadow-border transition-[box-shadow] duration-(--motion-fast) ease-(--ease-out)",
                 ((busy === "compose" &&
                   (s.id === "compose" || s.id === "policy")) ||
                   (busy === "dry" && s.id === "dry") ||
@@ -431,7 +431,7 @@ function Home() {
       </section>
 
       {last?.run ? (
-        <section className="rounded-xl bg-surface p-4 shadow-border">
+        <section className="motion-enter rounded-xl bg-surface p-4 shadow-border">
           <h2
             ref={lastRunRef}
             tabIndex={-1}
@@ -534,13 +534,13 @@ function Home() {
                       {row.txHash ? (
                         <span className="inline-flex flex-wrap items-center gap-1">
                           <a
-                            className="inline-flex items-center gap-1 text-accent hover:underline"
+                            className="group inline-flex items-center gap-1 text-accent hover:underline"
                             href={`https://etherscan.io/tx/${row.txHash}`}
                             target="_blank"
                             rel="noreferrer"
                           >
                             {shortHash(row.txHash)}
-                            <ArrowUpRight className="size-3" />
+                            <ArrowUpRight className="size-3 transition-transform duration-(--motion-fast) ease-(--ease-out) group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                           </a>
                           {row.mode === "fixture" ? (
                             <span className="text-subtle">recorded</span>
@@ -566,7 +566,7 @@ function Home() {
           {skyActions.slice(0, 12).map((a) => (
             <li
               key={a.actionType}
-              className="rounded-md bg-surface px-3 py-3 shadow-border"
+              className="surface-hover rounded-md bg-surface px-3 py-3 shadow-border"
             >
               <p className="font-mono text-xs text-accent">{a.actionType}</p>
               <p className="mt-1 text-sm">{a.label}</p>
@@ -598,31 +598,31 @@ function ProvenRun() {
       </p>
       <div className="mt-3 flex flex-col gap-1 font-mono text-xs sm:flex-row sm:flex-wrap sm:gap-x-6">
         <a
-          className="inline-flex min-h-11 items-center gap-1 text-muted hover:text-accent"
+          className="group inline-flex min-h-11 items-center gap-1 text-muted hover:text-accent"
           href={PROVEN_RUN.executionUrl}
           target="_blank"
           rel="noreferrer"
         >
           run {PROVEN_RUN.executionId}
-          <ArrowUpRight className="size-3" />
+          <ArrowUpRight className="size-3 transition-transform duration-(--motion-fast) ease-(--ease-out) group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </a>
         <a
-          className="inline-flex min-h-11 items-center gap-1 text-muted hover:text-accent"
+          className="group inline-flex min-h-11 items-center gap-1 text-muted hover:text-accent"
           href={PROVEN_RUN.txUrl}
           target="_blank"
           rel="noreferrer"
         >
           Etherscan
-          <ArrowUpRight className="size-3" />
+          <ArrowUpRight className="size-3 transition-transform duration-(--motion-fast) ease-(--ease-out) group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </a>
         <a
-          className="inline-flex min-h-11 items-center gap-1 text-muted hover:text-accent"
+          className="group inline-flex min-h-11 items-center gap-1 text-muted hover:text-accent"
           href={PROVEN_RUN.approveWorkflowUrl}
           target="_blank"
           rel="noreferrer"
         >
           workflow {PROVEN_RUN.approveWorkflowId}
-          <ArrowUpRight className="size-3" />
+          <ArrowUpRight className="size-3 transition-transform duration-(--motion-fast) ease-(--ease-out) group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </a>
       </div>
     </aside>
@@ -657,10 +657,10 @@ function Fact({
             href={href}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1 hover:text-accent"
+            className="group inline-flex items-center gap-1 hover:text-accent"
           >
             {inner}
-            <ArrowUpRight className="size-3" />
+            <ArrowUpRight className="size-3 transition-transform duration-(--motion-fast) ease-(--ease-out) group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </a>
         ) : (
           inner
@@ -675,7 +675,7 @@ function StatusChip({ ok, label }: { ok: boolean; label: string }) {
     <span
       role="status"
       className={cn(
-        "inline-flex h-8 items-center rounded-full px-3 font-mono text-2xs shadow-border",
+        "inline-flex h-8 items-center rounded-full px-3 font-mono text-2xs shadow-border transition-colors duration-(--motion-fast) ease-(--ease-out)",
         ok ? "text-ok" : "text-muted",
       )}
     >

@@ -37,14 +37,20 @@
   --radius-xl: 28px;
   --shadow-border: 0 0 0 1px rgba(232, 228, 216, 0.08);
   --shadow-border-hover: 0 0 0 1px rgba(232, 228, 216, 0.13);
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --motion-stagger: 40ms;
-  --motion-micro: 80ms;
-  --motion-quick: 150ms;
-  --motion-fast: 250ms;
-  --motion-slow: 400ms;
-  --motion-y-base: 8px;
+  --ease-out: cubic-bezier(0.16, 0, 0.13, 1);
+  --ease-smooth-out: cubic-bezier(0.16, 0, 0.13, 1);
+  --ease-pop: cubic-bezier(0.2, 1, 0.4, 1);
+  --ease-in-out-cubic: cubic-bezier(0.65, 0.05, 0.36, 1);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-circ: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-stagger: 80ms;
+  --motion-micro: 150ms;
+  --motion-quick: 175ms;
+  --motion-fast: 300ms;
+  --motion-slow: 500ms;
+  --motion-y-micro: 2px;
+  --motion-y-base: 10px;
   --scale-press: 0.96;
 }
 
@@ -57,6 +63,7 @@
 
   a {
     touch-action: manipulation;
+    transition: color var(--motion-fast) var(--ease-out);
   }
 
   html {
@@ -89,7 +96,7 @@
 
 @layer utilities {
   .rise-in > * {
-    animation: rise var(--motion-slow) var(--ease-smooth-out) both;
+    animation: slide-up-more var(--motion-slow) var(--ease-out) both;
   }
   .rise-in > *:nth-child(1) {
     animation-delay: 0ms;
@@ -109,16 +116,72 @@
   .rise-in > *:nth-child(n + 6) {
     animation-delay: calc(var(--motion-stagger) * 5);
   }
+
+  .motion-enter {
+    animation: slide-up-fade var(--motion-fast) var(--ease-out) both;
+  }
+
+  .motion-enter-more {
+    animation: slide-up-more var(--motion-slow) var(--ease-out) both;
+  }
+
+  .surface-hover {
+    transition:
+      box-shadow var(--motion-fast) var(--ease-out),
+      background-color var(--motion-fast) var(--ease-out);
+  }
+  .surface-hover:hover {
+    box-shadow: var(--shadow-border-hover);
+  }
+
+  .btn-shine {
+    isolation: isolate;
+  }
+  .btn-shine::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 40%,
+      color-mix(in oklab, white 18%, transparent) 50%,
+      transparent 60%
+    );
+    background-size: 200% 100%;
+    animation: shine 4.5s linear infinite;
+  }
 }
 
-@keyframes rise {
+@keyframes slide-up-fade {
   from {
     opacity: 0;
-    transform: translateY(var(--motion-y-base));
+    translate: 0 var(--motion-y-micro);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    translate: 0;
+  }
+}
+
+@keyframes slide-up-more {
+  from {
+    opacity: 0;
+    translate: 0 var(--motion-y-base);
+  }
+  to {
+    opacity: 1;
+    translate: 0;
+  }
+}
+
+@keyframes shine {
+  from {
+    background-position: 120% 0;
+  }
+  to {
+    background-position: -20% 0;
   }
 }
 

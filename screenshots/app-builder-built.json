@@ -7,8 +7,8 @@
       "status": 200,
       "title": "Sky Exec",
       "hasCanvas": false,
-      "bodyTextLen": 1825,
-      "bodyTextHash": "fcb38ea76a88abf90306c19e82811287e0c2192ec4d170bafa0ad68825a4bb17",
+      "bodyTextLen": 1286,
+      "bodyTextHash": "89abb1c8cc831e764d4af868e38d69fae5b7554c8eb4a3bbfda2476e279b4993",
       "bodyTextPrefix": "KEEPERHUB · SKY PROTOCOL Sky Exec Recorded action: Sky approve 0",
       "horizontalOverflow": false,
       "consoleErrors": [],
@@ -21,8 +21,8 @@
       "status": 200,
       "title": "Sky Exec",
       "hasCanvas": false,
-      "bodyTextLen": 1825,
-      "bodyTextHash": "fcb38ea76a88abf90306c19e82811287e0c2192ec4d170bafa0ad68825a4bb17",
+      "bodyTextLen": 1286,
+      "bodyTextHash": "89abb1c8cc831e764d4af868e38d69fae5b7554c8eb4a3bbfda2476e279b4993",
       "bodyTextPrefix": "KEEPERHUB · SKY PROTOCOL Sky Exec Recorded action: Sky approve 0",
       "horizontalOverflow": false,
       "consoleErrors": [],
@@ -32,10 +32,5 @@
   },
   "brandWarnings": [],
   "authWarnings": [],
-  "verdictFile": "/workspace/screenshots/app-builder-built.json",
-  "divergesFromBaseline": true,
-  "baselineReasons": [
-    "desktop: body text changed (1286 -> 1825 chars, hash mismatch)",
-    "mobile: body text changed (1286 -> 1825 chars, hash mismatch)"
-  ]
+  "verdictFile": "/workspace/screenshots/app-builder-built.json"
 }
