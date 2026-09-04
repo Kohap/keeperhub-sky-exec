@@ -37,16 +37,16 @@ function Landing() {
   return (
     <main className="overflow-x-clip">
       <section className="relative min-h-dvh overflow-hidden">
-        <div className="pointer-events-none absolute inset-0" aria-hidden>
+        <div className="sv-stage pointer-events-none absolute inset-0" aria-hidden>
           <img
             src="/visuals/sv31.jpg"
             alt=""
-            className="absolute inset-0 h-full w-full object-cover object-right"
+            className="sv-drift absolute inset-0 h-full w-full object-cover object-right"
           />
           <img
             src="/visuals/sv47.jpg"
             alt=""
-            className="absolute -right-16 top-[8%] w-[min(70vw,36rem)] mix-blend-screen sm:-right-10 sm:top-[4%] sm:w-[min(52vw,38rem)]"
+            className="sv-float absolute -right-16 top-[8%] w-[min(70vw,36rem)] mix-blend-screen sm:-right-10 sm:top-[4%] sm:w-[min(52vw,38rem)]"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/80 to-bg/20 sm:via-bg/70" />
         </div>

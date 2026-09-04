@@ -287,11 +287,11 @@ function Home() {
 
   return (
     <div className="relative min-h-screen overflow-x-clip">
-      <div className="pointer-events-none absolute inset-0" aria-hidden>
+      <div className="sv-stage pointer-events-none absolute inset-0" aria-hidden>
         <img
           src="/visuals/sv31.jpg"
           alt=""
-          className="absolute inset-0 h-full w-full object-cover object-[80%_center] opacity-50 mix-blend-screen"
+          className="sv-drift absolute inset-0 h-full w-full object-cover object-[80%_center] opacity-50 mix-blend-screen"
         />
         <div className="absolute inset-0 bg-[radial-gradient(48rem_24rem_at_100%_0%,color-mix(in_oklab,var(--color-accent)_22%,transparent),transparent_62%)]" />
         <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/88 to-bg/55" />
