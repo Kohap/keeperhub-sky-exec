@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { PROVEN_RUN } from "../../packages/keeperhub/src/proof.ts";
 
@@ -31,6 +32,40 @@ export function SiteNav() {
   );
 }
 
+export function PageHero({
+  title,
+  children,
+}: {
+  title: string;
+  children?: ReactNode;
+}) {
+  return (
+    <header className="mt-10">
+      <div className="flex items-end gap-4">
+        <img
+          src="/logo.png"
+          alt=""
+          width={56}
+          height={56}
+          className="size-14 rounded-lg"
+        />
+        <div className="min-w-0">
+          <h1 className="font-display text-3xl tracking-display">{title}</h1>
+          {children}
+        </div>
+      </div>
+      <a
+        href={PROVEN_RUN.txUrl}
+        target="_blank"
+        rel="noreferrer"
+        className="mt-5 block max-w-xl break-all font-mono text-xs leading-snug text-muted tabular-nums hover:text-accent"
+      >
+        {PROVEN_RUN.txHash}
+      </a>
+    </header>
+  );
+}
+
 export function SiteFooter() {
   return (
     <footer className="mt-16 border-t border-border pt-6 text-sm text-muted">
@@ -41,7 +76,10 @@ export function SiteFooter() {
         protocol.
       </p>
       <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
-        <Link to="/legal" className="inline-flex min-h-8 items-center hover:text-accent">
+        <Link
+          to="/legal"
+          className="inline-flex min-h-8 items-center hover:text-accent"
+        >
           Legal
         </Link>
         <a

@@ -53,7 +53,7 @@ function stageMessage(
       ? "Execute recorded. Not a new broadcast."
       : "Execute succeeded.";
   if (last.dryRun?.ok)
-    return `Dry-run ok · gas ${last.dryRun.gasEstimate ?? "—"}`;
+    return `Dry-run ok · gas ${last.dryRun.gasEstimate ?? "n/a"}`;
   if (last.policy.allow) return "Policy allow";
   return last.error ?? "";
 }
@@ -102,7 +102,7 @@ function mcpLines(
     lines.push({
       tool: "contract-call simulate",
       detail: d
-        ? `wouldRevert ${String(d.wouldRevert ?? !d.ok)} · gas ${d.gasEstimate ?? "—"}`
+        ? `wouldRevert ${String(d.wouldRevert ?? !d.ok)} · gas ${d.gasEstimate ?? "n/a"}`
         : "no chain write",
       state: d ? (d.ok ? "done" : "fail") : "run",
     });
@@ -269,7 +269,7 @@ function Home() {
         label: "Dry-run",
         hint: d
           ? d.ok
-            ? `simulate · gas ${d.gasEstimate ?? "—"}`
+            ? `simulate · gas ${d.gasEstimate ?? "n/a"}`
             : (d.error ?? "would revert")
           : "No chain write",
         state: !d ? "idle" : d.ok ? "done" : "fail",
@@ -289,7 +289,7 @@ function Home() {
     <main className="rise-in mx-auto flex min-h-screen max-w-6xl flex-col gap-4 px-4 py-5 sm:gap-5 sm:px-6 sm:py-6">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="max-w-2xl">
-          <p className="font-mono text-2xs tracking-kicker text-accent uppercase">
+          <p className="text-xs text-muted">
             KeeperHub · Sky Protocol
           </p>
           <h1 className="mt-1 flex items-center gap-2 font-display text-2xl leading-tight tracking-display text-fg">
@@ -342,9 +342,9 @@ function Home() {
       {fixtureBanner ? (
         <div
           role="status"
-          className="motion-enter rounded-md bg-surface-2 px-3 py-2 text-xs leading-snug text-fg shadow-border"
+          className="motion-enter rounded-md bg-surface-2 px-3 py-2 text-xs leading-snug text-fg"
         >
-          Fixture mode. Empty key — hashes here are the recorded KeeperHub
+          Fixture mode. Empty key. Hashes here are the recorded KeeperHub
           execute, not a new broadcast.
         </div>
       ) : null}
@@ -353,11 +353,11 @@ function Home() {
 
       <section className="grid gap-3 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
         <div
-          className="surface-hover rounded-lg bg-surface p-3 shadow-border"
+          className="surface-hover rounded-lg bg-surface p-3"
           aria-busy={busy !== null}
         >
           <div className="mb-2 flex items-center justify-between gap-3">
-            <h2 className="font-mono text-2xs font-medium tracking-wide uppercase">
+            <h2 className="text-xs font-medium text-muted">
               Compose
             </h2>
             <label
@@ -386,7 +386,7 @@ function Home() {
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             rows={2}
-            className="w-full resize-y rounded-md bg-bg px-3 py-2 font-mono text-sm text-fg shadow-border outline-none ring-ring transition-[box-shadow] duration-(--motion-quick) ease-(--ease-out) focus:ring-2"
+            className="w-full resize-y rounded-md bg-bg px-3 py-2 font-mono text-sm text-fg outline-none ring-1 ring-border ring-ring transition-[box-shadow] duration-(--motion-quick) ease-(--ease-out) focus:ring-2"
           />
           <div className="mt-2 flex flex-wrap gap-1.5">
             <Button
@@ -411,7 +411,7 @@ function Home() {
           <div className="mt-3">
             <label
               htmlFor="kh-org-key"
-              className="mb-1 block font-mono text-2xs tracking-wide text-muted uppercase"
+              className="mb-1 block text-xs text-muted"
             >
               KeeperHub org key (optional)
             </label>
@@ -431,7 +431,7 @@ function Home() {
                     /* ignore */
                   }
                 }}
-                className="h-11 w-full rounded-md bg-bg px-3 font-mono text-sm text-fg shadow-border outline-none ring-ring transition-[box-shadow] duration-(--motion-quick) ease-(--ease-out) focus:ring-2"
+                className="h-11 w-full rounded-md bg-bg px-3 font-mono text-sm text-fg outline-none ring-1 ring-border ring-ring transition-[box-shadow] duration-(--motion-quick) ease-(--ease-out) focus:ring-2"
               />
               <Button
                 type="button"
@@ -487,19 +487,19 @@ function Home() {
           {last?.dryRun ? (
             <p
               className={cn(
-                "mt-2 rounded-md px-3 py-2 font-mono text-2xs leading-snug shadow-border",
+                "mt-2 rounded-md px-3 py-2 font-mono text-2xs leading-snug",
                 last.dryRun.ok ? "text-ok" : "text-danger",
               )}
             >
               Dry-run {last.dryRun.ok ? "ok" : "fail"} · wouldRevert{" "}
               {String(last.dryRun.wouldRevert ?? !last.dryRun.ok)} · gas{" "}
-              {last.dryRun.gasEstimate ?? "—"} · no chain write
+              {last.dryRun.gasEstimate ?? "n/a"} · no chain write
             </p>
           ) : null}
           <p className="mt-2 text-xs leading-snug text-muted">
             Confirm Execute: this calls KeeperHub{" "}
             <span className="font-mono">execute_workflow</span> on the composed
-            Sky approve. Dry-run first. Fixture replays the recorded hash — it
+            Sky approve. Dry-run first. Fixture replays the recorded hash. It
             is not a new broadcast.
           </p>
           <p
@@ -510,13 +510,13 @@ function Home() {
             {liveMessage}
           </p>
           {last?.error === "policy_reject" && last.policy.allow === false ? (
-            <p className="mt-4 motion-enter flex items-start gap-2 rounded-md bg-danger/10 px-3 py-2 text-sm text-fg shadow-border">
+            <p className="mt-4 motion-enter flex items-start gap-2 rounded-md bg-danger/10 px-3 py-2 text-sm text-fg">
               <Skull className="mt-0.5 size-4 shrink-0 text-danger" aria-hidden />
               {last.policy.reason}
             </p>
           ) : null}
           {last?.error === "dry_run_fail" ? (
-            <p className="mt-4 motion-enter flex items-start gap-2 rounded-md bg-danger/10 px-3 py-2 text-sm text-fg shadow-border">
+            <p className="mt-4 motion-enter flex items-start gap-2 rounded-md bg-danger/10 px-3 py-2 text-sm text-fg">
               <CircleAlert className="mt-0.5 size-4 shrink-0 text-danger" aria-hidden />
               {last.dryRun?.error ?? "Dry-run failed. Execute skipped."}
             </p>
@@ -524,7 +524,7 @@ function Home() {
         </div>
 
         <div className="flex flex-col gap-3">
-        <ol className="overflow-hidden rounded-lg bg-surface shadow-border">
+        <ol className="overflow-hidden rounded-lg bg-surface">
           {steps.map((s, i) => (
             <li
               key={s.id}
@@ -558,8 +558,8 @@ function Home() {
             </li>
           ))}
         </ol>
-        <section className="rounded-lg bg-surface p-3 shadow-border">
-          <h2 className="mb-1 font-mono text-2xs font-medium tracking-wide uppercase">
+        <section className="rounded-lg bg-surface p-3">
+          <h2 className="mb-1 text-xs font-medium text-muted">
             MCP log
           </h2>
           {log.length === 0 ? (
@@ -588,11 +588,11 @@ function Home() {
       </section>
 
       {last?.run ? (
-        <section className="motion-enter rounded-lg bg-surface p-3 shadow-border">
+        <section className="motion-enter rounded-lg bg-surface p-3">
           <h2
             ref={lastRunRef}
             tabIndex={-1}
-            className="font-mono text-2xs font-medium tracking-wide uppercase outline-none"
+            className="text-xs font-medium text-muted outline-none"
           >
             {last.mode === "fixture" ? "Last run · recorded" : "Last run"}
           </h2>
@@ -622,7 +622,7 @@ function Home() {
             />
             <Fact
               label="Tx"
-              value={last.run.txHash ?? "—"}
+              value={last.run.txHash ?? "n/a"}
               href={last.run.txLink}
               recorded={last.mode === "fixture"}
             />
@@ -637,9 +637,9 @@ function Home() {
         </section>
       ) : null}
 
-      <section className="rounded-lg bg-surface p-3 shadow-border">
+      <section className="rounded-lg bg-surface p-3">
         <div className="mb-2 flex items-center justify-between">
-          <h2 className="font-mono text-2xs font-medium tracking-wide uppercase">
+          <h2 className="text-xs font-medium text-muted">
             Audit trail
           </h2>
           <span className="font-mono text-2xs tabular-nums text-subtle">
@@ -653,7 +653,7 @@ function Home() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-xl text-left text-sm">
-              <thead className="font-mono text-2xs tracking-wide text-subtle uppercase">
+              <thead className="text-xs text-subtle">
                 <tr className="border-b border-border">
                   <th className="py-1.5 pr-3 font-medium">Time</th>
                   <th className="py-1.5 pr-3 font-medium">Intent</th>
@@ -685,7 +685,7 @@ function Home() {
                       )}
                     </td>
                     <td className="py-1.5 pr-3 font-mono text-xs tabular-nums">
-                      {row.runId ? shortHash(row.runId, 4) : "—"}
+                      {row.runId ? shortHash(row.runId, 4) : "n/a"}
                       {row.mode === "fixture" && row.runId ? (
                         <span className="ml-2 text-subtle">recorded</span>
                       ) : null}
@@ -707,7 +707,7 @@ function Home() {
                           ) : null}
                         </span>
                       ) : (
-                        "—"
+                        "n/a"
                       )}
                     </td>
                   </tr>
@@ -719,10 +719,10 @@ function Home() {
       </section>
 
       <section>
-        <h2 className="mb-2 font-mono text-2xs font-medium tracking-wide uppercase">
+        <h2 className="mb-2 text-xs font-medium text-muted">
           Sky actions from KeeperHub
         </h2>
-        <ul className="overflow-hidden rounded-lg bg-surface shadow-border">
+        <ul className="overflow-hidden rounded-lg bg-surface">
           {skyActions.slice(0, 12).map((a) => (
             <li
               key={a.actionType}
@@ -761,8 +761,8 @@ function CopyHash({ value }: { value: string }) {
 
 function ProvenRun() {
   return (
-    <aside className="rounded-lg bg-surface-2 p-3 shadow-border">
-      <p className="font-mono text-2xs tracking-kicker text-accent uppercase">
+    <aside className="rounded-lg bg-surface-2 p-3">
+      <p className="text-xs text-muted">
         Recorded KeeperHub execute
       </p>
       <a
@@ -831,7 +831,7 @@ function Fact({
   );
   return (
     <div className="flex items-baseline justify-between gap-4 py-1.5">
-      <dt className="shrink-0 font-mono text-2xs tracking-wide text-subtle uppercase">
+      <dt className="shrink-0 text-xs text-subtle">
         {label}
         {recorded ? " · recorded" : ""}
       </dt>
@@ -859,7 +859,7 @@ function StatusChip({ ok, label }: { ok: boolean; label: string }) {
     <span
       role="status"
       className={cn(
-        "inline-flex h-6 items-center rounded-full px-2 font-mono text-2xs shadow-border transition-colors duration-(--motion-fast) ease-(--ease-out)",
+        "inline-flex h-6 items-center rounded-full px-2 font-mono text-2xs transition-colors duration-(--motion-fast) ease-(--ease-out)",
         ok ? "text-ok" : "text-muted",
       )}
     >

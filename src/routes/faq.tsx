@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SiteFooter, SiteNav } from "@/components/site-shell";
+import { SiteFooter, SiteNav, PageHero } from "@/components/site-shell";
 
 export const Route = createFileRoute("/faq")({ component: FaqPage });
 
@@ -34,7 +34,11 @@ function FaqPage() {
   return (
     <main className="mx-auto min-h-dvh max-w-5xl px-4 py-3 sm:px-6 sm:py-4">
       <SiteNav />
-      <h1 className="mt-10 font-display text-3xl tracking-display">FAQ</h1>
+      <PageHero title="FAQ">
+        <p className="mt-2 max-w-xl text-sm text-muted">
+          Recorded Sky approve. Fixture hashes are not a new broadcast.
+        </p>
+      </PageHero>
       <dl className="mt-8">
         {FAQS.map((item) => (
           <div key={item.q} className="border-t border-border py-5">

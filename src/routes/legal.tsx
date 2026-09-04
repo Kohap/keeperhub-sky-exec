@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SiteFooter, SiteNav } from "@/components/site-shell";
+import { SiteFooter, SiteNav, PageHero } from "@/components/site-shell";
 
 export const Route = createFileRoute("/legal")({ component: LegalPage });
 
@@ -7,7 +7,11 @@ function LegalPage() {
   return (
     <main className="mx-auto min-h-dvh max-w-5xl px-4 py-3 sm:px-6 sm:py-4">
       <SiteNav />
-      <h1 className="mt-10 font-display text-3xl tracking-display">Legal</h1>
+      <PageHero title="Legal">
+        <p className="mt-2 max-w-xl text-sm text-muted">
+          © 2026 Gift. Sky and KeeperHub stay theirs.
+        </p>
+      </PageHero>
       <div className="mt-8 max-w-2xl space-y-8 text-sm leading-normal text-muted">
         <section>
           <h2 className="text-base font-medium text-fg">Copyright</h2>

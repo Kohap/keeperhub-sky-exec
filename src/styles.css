@@ -15,7 +15,7 @@
   --color-ring: #8aa394;
   --color-danger: #b4554a;
   --color-ok: #7d9a7a;
-  --font-display: "Fraunces", "Times New Roman", serif;
+  --font-display: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
   --font-sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
   --text-2xs: 0.6875rem;

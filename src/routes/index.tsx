@@ -38,17 +38,7 @@ function Landing() {
     <main className="overflow-x-clip">
       <section className="relative min-h-dvh overflow-hidden">
         <div className="pointer-events-none absolute inset-0" aria-hidden>
-          <img
-            src="/visuals/sv31.jpg"
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover object-right"
-          />
-          <img
-            src="/visuals/sv47.jpg"
-            alt=""
-            className="absolute -right-16 top-[8%] w-[min(70vw,36rem)] mix-blend-screen sm:-right-10 sm:top-[4%] sm:w-[min(52vw,38rem)]"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/80 to-bg/20 sm:via-bg/70" />
+          <div className="absolute inset-0 bg-[radial-gradient(70rem_36rem_at_110%_-10%,color-mix(in_oklab,var(--color-accent)_14%,transparent),transparent_55%)]" />
         </div>
         <div className="relative z-10 mx-auto flex min-h-dvh max-w-5xl flex-col px-4 py-3 sm:px-6 sm:py-4">
         <SiteNav />
