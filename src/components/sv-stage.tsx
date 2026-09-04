@@ -16,6 +16,8 @@ export function SvStage({
     const el = ref.current;
     if (!el) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+    if (window.matchMedia("(max-width: 639px)").matches) return;
 
     const onMove = (e: PointerEvent) => {
       const nx = e.clientX / innerWidth - 0.5;

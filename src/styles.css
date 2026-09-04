@@ -210,6 +210,8 @@
     transform-style: preserve-3d;
     --sv-rx: 0deg;
     --sv-ry: 0deg;
+    z-index: 0;
+    isolation: isolate;
   }
   .sv-orbit {
     position: absolute;
@@ -234,13 +236,6 @@
     backface-visibility: hidden;
     mix-blend-mode: screen;
   }
-  @media (max-width: 639px) {
-    .sv-card {
-      top: 14%;
-      right: -2.5rem;
-      width: min(78vw, 22rem);
-    }
-  }
   .sv-float {
     animation: sv-float 16s var(--ease-in-out-cubic) infinite;
     will-change: transform;
@@ -254,6 +249,29 @@
     inset: 0;
     transform: translateZ(8px);
     pointer-events: none;
+  }
+  @media (max-width: 639px) {
+    .sv-stage,
+    .sv-orbit {
+      perspective: none;
+      transform: none;
+      transform-style: flat;
+    }
+    .sv-card {
+      display: none;
+    }
+    .sv-float,
+    .sv-drift {
+      animation: none;
+    }
+    .sv-plane,
+    .sv-veil {
+      transform: none;
+    }
+    .sv-plane {
+      opacity: 0.28;
+      mix-blend-mode: normal;
+    }
   }
 }
 

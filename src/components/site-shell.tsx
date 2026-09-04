@@ -6,18 +6,20 @@ const navLink = "inline-flex min-h-8 items-center text-muted hover:text-accent";
 
 export function SiteNav() {
   return (
-    <nav className="flex items-center justify-between gap-3 rounded-full bg-surface-2 px-4 py-2">
-      <Link to="/" className="flex min-h-8 items-center gap-2">
+    <nav className="flex items-center justify-between gap-2 rounded-full bg-surface-2 px-3 py-2 sm:gap-3 sm:px-4">
+      <Link to="/" className="flex min-h-8 min-w-0 items-center gap-2">
         <img
           src="/logo.png"
           alt=""
           width={28}
           height={28}
-          className="size-7 rounded-md"
+          className="size-7 shrink-0 rounded-md"
         />
-        <span className="font-display text-base tracking-display">Sky Exec</span>
+        <span className="truncate font-display text-sm tracking-display sm:text-base">
+          Sky Exec
+        </span>
       </Link>
-      <div className="flex items-center gap-5 text-sm">
+      <div className="flex shrink-0 items-center gap-3 text-xs sm:gap-5 sm:text-sm">
         <Link to="/desk" className={navLink}>
           Desk
         </Link>

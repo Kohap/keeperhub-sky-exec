@@ -69,7 +69,7 @@ function Landing() {
               className="sv-card sv-float"
             />
           </div>
-          <div className="sv-veil bg-gradient-to-r from-bg via-bg/80 to-bg/20 sm:via-bg/70" />
+          <div className="sv-veil bg-gradient-to-r from-bg via-bg/90 to-bg/55 sm:via-bg/80 sm:to-bg/20" />
         </SvStage>
         <div className="relative z-10 mx-auto flex max-w-5xl flex-col px-4 py-3 sm:px-6 sm:py-4">
           <SiteNav />
@@ -93,11 +93,13 @@ function Landing() {
                 </Link>
               </div>
             </div>
-            <dl className="grid max-w-3xl grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-4">
+            <dl className="grid max-w-3xl grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4 sm:gap-x-6">
               {FACTS.map((f) => (
-                <div key={f.k}>
+                <div key={f.k} className="min-w-0">
                   <dt className="text-xs text-subtle">{f.k}</dt>
-                  <dd className="mt-0.5 font-mono text-sm tabular-nums">{f.v}</dd>
+                  <dd className="mt-0.5 break-all font-mono text-sm tabular-nums">
+                    {f.v}
+                  </dd>
                 </div>
               ))}
             </dl>
@@ -127,7 +129,7 @@ function Landing() {
 
         <div className="mt-10 border-t border-border pt-6">
           <p className="text-xs text-subtle">KeeperHub MCP on this run</p>
-          <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2 font-mono text-sm">
+          <ul className="mt-3 flex flex-col gap-2 font-mono text-sm sm:flex-row sm:flex-wrap sm:gap-x-5 sm:gap-y-2">
             {MCP.map((t) => (
               <li key={t}>{t}</li>
             ))}
@@ -150,18 +152,16 @@ function Landing() {
 function ExecuteStub() {
   return (
     <div className="relative max-w-3xl overflow-x-clip">
-      <article className="kh-stub bg-surface-2 py-4 pr-6 pl-8 sm:py-5 sm:pr-10 sm:pl-10">
-        <p className="flex items-start gap-2 text-sm text-muted">
-          <span>
-            Sky approve 0 USDS for sUSDS vault · {PROVEN_RUN.network} · block{" "}
-            {PROVEN_RUN.blockNumber}
-          </span>
+      <article className="kh-stub bg-surface-2 py-4 pr-5 pl-10 sm:py-5 sm:pr-10 sm:pl-10">
+        <p className="text-sm text-muted">
+          Sky approve 0 USDS for sUSDS vault · {PROVEN_RUN.network} · block{" "}
+          {PROVEN_RUN.blockNumber}
         </p>
         <a
           href={PROVEN_RUN.txUrl}
           target="_blank"
           rel="noreferrer"
-          className="mt-2 block break-all font-mono text-lg leading-snug text-fg tabular-nums hover:text-accent sm:text-xl"
+          className="mt-2 block break-all font-mono text-sm leading-snug text-fg tabular-nums hover:text-accent sm:text-xl"
         >
           {PROVEN_RUN.txHash}
         </a>
