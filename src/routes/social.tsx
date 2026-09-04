@@ -22,12 +22,6 @@ const LINKS = [
     href: "https://github.com/Kohap/keeperhub-sky-exec",
     hint: "This product.",
   },
-  {
-    label: "Figma",
-    handle: "Gift0x",
-    href: "https://www.figma.com/design/NY2QOot7eDDTyHhbSXteHT",
-    hint: "Desk frame for judges.",
-  },
 ] as const;
 
 function SocialPage() {
