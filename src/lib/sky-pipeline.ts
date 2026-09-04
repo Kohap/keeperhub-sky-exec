@@ -21,6 +21,8 @@ export type PipelineInput = {
   killSwitch?: boolean;
 };
 
+export type PipelineStage = "compose" | "dry" | "exec";
+
 export type PipelineOutput = {
   intent: Intent;
   policy: PolicyDecision;
@@ -41,6 +43,49 @@ function pickClient(apiKey?: string): {
     return { kh: createMcpAdapter({ apiKey: key }), mode: "live" };
   }
   return { kh: createFixtureAdapter(), mode: "fixture" };
+}
+
+/** Shared observe → policy → (dry-run) → (execute) path. MCP adapter unchanged. */
+export async function runPipeline(
+  data: PipelineInput,
+  stage: PipelineStage,
+): Promise<PipelineOutput> {
+  const intent = composeIntent(data.prompt);
+  const policy = assertAllowed(
+    intent,
+    loadLimitsFromEnv(process.env, { killSwitch: data.killSwitch }),
+  );
+  const workflow = workflowFromIntent(intent);
+  const { kh, mode } = pickClient(data.apiKey);
+  const base: PipelineOutput = {
+    intent,
+    policy,
+    workflowName: workflow.name,
+    mode,
+  };
+  if (!policy.allow) {
+    return { ...base, error: "policy_reject" };
+  }
+  if (stage === "compose") {
+    return base;
+  }
+  const dryRun = await kh.dryRun(workflow);
+  if (stage === "dry" || !dryRun.ok) {
+    return {
+      ...base,
+      workflowId: workflow.id,
+      dryRun,
+      error: dryRun.ok ? undefined : "dry_run_fail",
+    };
+  }
+  const run = await kh.execute(workflow);
+  return {
+    ...base,
+    workflowId: run.workflowId ?? workflow.id,
+    dryRun,
+    run,
+    error: run.status === "success" ? undefined : run.error ?? "execute_fail",
+  };
 }
 
 export const getProof = createServerFn({ method: "GET" }).handler(async () => {
@@ -70,91 +115,17 @@ export const listSkyActions = createServerFn({ method: "GET" }).handler(
 export const composeAndGate = createServerFn({ method: "POST" })
   .validator((data: PipelineInput) => data)
   .handler(async ({ data }): Promise<PipelineOutput> => {
-    const intent = composeIntent(data.prompt);
-    const policy = assertAllowed(
-      intent,
-      loadLimitsFromEnv(process.env, { killSwitch: data.killSwitch }),
-    );
-    const workflow = workflowFromIntent(intent);
-    return {
-      intent,
-      policy,
-      workflowName: workflow.name,
-      mode: data.apiKey?.startsWith("kh_") ? "live" : "fixture",
-      error: policy.allow ? undefined : "policy_reject",
-    };
+    return runPipeline(data, "compose");
   });
 
 export const dryRunPipeline = createServerFn({ method: "POST" })
   .validator((data: PipelineInput) => data)
   .handler(async ({ data }): Promise<PipelineOutput> => {
-    const intent = composeIntent(data.prompt);
-    const policy = assertAllowed(
-      intent,
-      loadLimitsFromEnv(process.env, { killSwitch: data.killSwitch }),
-    );
-    const workflow = workflowFromIntent(intent);
-    const { kh, mode } = pickClient(data.apiKey);
-    if (!policy.allow) {
-      return {
-        intent,
-        policy,
-        workflowName: workflow.name,
-        mode,
-        error: "policy_reject",
-      };
-    }
-    const dryRun = await kh.dryRun(workflow);
-    return {
-      intent,
-      policy,
-      workflowName: workflow.name,
-      workflowId: workflow.id,
-      dryRun,
-      mode,
-      error: dryRun.ok ? undefined : "dry_run_fail",
-    };
+    return runPipeline(data, "dry");
   });
 
 export const executePipeline = createServerFn({ method: "POST" })
   .validator((data: PipelineInput) => data)
   .handler(async ({ data }): Promise<PipelineOutput> => {
-    const intent = composeIntent(data.prompt);
-    const policy = assertAllowed(
-      intent,
-      loadLimitsFromEnv(process.env, { killSwitch: data.killSwitch }),
-    );
-    const workflow = workflowFromIntent(intent);
-    const { kh, mode } = pickClient(data.apiKey);
-    if (!policy.allow) {
-      return {
-        intent,
-        policy,
-        workflowName: workflow.name,
-        mode,
-        error: "policy_reject",
-      };
-    }
-    const dryRun = await kh.dryRun(workflow);
-    if (!dryRun.ok) {
-      return {
-        intent,
-        policy,
-        workflowName: workflow.name,
-        dryRun,
-        mode,
-        error: "dry_run_fail",
-      };
-    }
-    const run = await kh.execute(workflow);
-    return {
-      intent,
-      policy,
-      workflowName: workflow.name,
-      workflowId: run.workflowId ?? workflow.id,
-      dryRun,
-      run,
-      mode,
-      error: run.status === "success" ? undefined : run.error ?? "execute_fail",
-    };
+    return runPipeline(data, "exec");
   });

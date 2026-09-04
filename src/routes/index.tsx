@@ -75,6 +75,15 @@ function Home() {
     });
   }
 
+  function clearKey() {
+    setApiKey("");
+    try {
+      sessionStorage.removeItem(KEY_STORE);
+    } catch {
+      /* ignore */
+    }
+  }
+
   async function run(
     kind: "compose" | "dry" | "exec",
     fn: () => Promise<PipelineOutput>,
@@ -96,18 +105,18 @@ function Home() {
       );
     } catch (err) {
       const message = err instanceof Error ? err.message : "request failed";
-      setLast((prev) =>
-        prev
-          ? { ...prev, error: message }
-          : null,
-      );
+      setLast((prev) => (prev ? { ...prev, error: message } : null));
     } finally {
       setBusy(null);
     }
   }
 
-  const policyBlocked = last?.policy.allow === false && last.intent.prompt === prompt;
+  const policyBlocked =
+    last?.policy.allow === false && last.intent.prompt === prompt;
   const payload = { data: { prompt, apiKey, killSwitch } };
+  const hasLiveKey = apiKey.trim().startsWith("kh_");
+  const fixtureBanner = !hasLiveKey || last?.mode === "fixture";
+  const fixtureChip = last ? last.mode === "fixture" : !hasLiveKey;
 
   const steps = useMemo(() => {
     const p = last?.policy;
@@ -136,7 +145,7 @@ function Home() {
         hint: d
           ? d.ok
             ? `simulate · gas ${d.gasEstimate ?? "—"}`
-            : d.error ?? "would revert"
+            : (d.error ?? "would revert")
           : "No chain write",
         state: !d ? "idle" : d.ok ? "done" : "fail",
       },
@@ -162,13 +171,16 @@ function Home() {
             Sky Exec
           </h1>
           <p className="mt-3 max-w-prose text-sm leading-relaxed text-muted">
-            An agent composes a Sky sUSDS deposit or withdraw on KeeperHub. You
-            review it, dry-run with no chain write, then that exact workflow
-            executes. Policy limits and the audit trail sit on this side of the
-            MCP.
+            Recorded action: Sky approve 0 USDS for the sUSDS vault on Ethereum
+            via KeeperHub. Not a completed deposit. You review it, dry-run with
+            no chain write, then that exact workflow executes.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <StatusChip
+            ok={!fixtureChip}
+            label={fixtureChip ? "fixture" : "live MCP"}
+          />
           <StatusChip
             ok={skyActions.length > 0}
             label={
@@ -183,6 +195,16 @@ function Home() {
         </div>
       </header>
 
+      {fixtureBanner ? (
+        <div
+          role="status"
+          className="rounded-xl border border-accent/30 bg-surface-2 px-4 py-3 text-sm leading-relaxed text-fg"
+        >
+          Fixture mode. Empty key — hashes here are the recorded KeeperHub
+          execute, not a new broadcast.
+        </div>
+      ) : null}
+
       <ProvenRun />
 
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
@@ -191,7 +213,7 @@ function Home() {
             <h2 className="text-sm font-medium tracking-wide uppercase">
               Compose
             </h2>
-            <label className="flex items-center gap-2 font-mono text-[11px] text-muted">
+            <label className="flex min-h-11 items-center gap-2 font-mono text-[11px] text-muted">
               <input
                 type="checkbox"
                 checked={killSwitch}
@@ -226,31 +248,43 @@ function Home() {
               Policy reject
             </Button>
           </div>
-          <label className="mt-4 block">
+          <div className="mt-4">
             <span className="mb-1 block font-mono text-[11px] tracking-wide text-muted uppercase">
               KeeperHub org key (optional)
             </span>
-            <input
-              type="password"
-              autoComplete="off"
-              placeholder="kh_…"
-              value={apiKey}
-              onChange={(e) => {
-                const v = e.target.value;
-                setApiKey(v);
-                try {
-                  sessionStorage.setItem(KEY_STORE, v);
-                } catch {
-                  /* ignore */
-                }
-              }}
-              className="h-11 w-full rounded-md border border-border bg-bg px-3 font-mono text-sm text-fg outline-none ring-ring focus:ring-2"
-            />
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <input
+                type="password"
+                autoComplete="off"
+                placeholder="kh_…"
+                aria-label="KeeperHub org key"
+                value={apiKey}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setApiKey(v);
+                  try {
+                    sessionStorage.setItem(KEY_STORE, v);
+                  } catch {
+                    /* ignore */
+                  }
+                }}
+                className="h-11 w-full rounded-md border border-border bg-bg px-3 font-mono text-sm text-fg outline-none ring-ring focus:ring-2"
+              />
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                className="h-11 shrink-0"
+                onClick={clearKey}
+              >
+                Clear key
+              </Button>
+            </div>
             <span className="mt-1 block text-xs text-subtle">
               Stays in this browser session. Empty = fixture mode, which replays
               the recorded live hash and will not invent a new one.
             </span>
-          </label>
+          </div>
           <div className="mt-5 flex flex-col gap-2 sm:flex-row">
             <Button
               className="flex-1"
@@ -287,6 +321,12 @@ function Home() {
               Execute
             </Button>
           </div>
+          <p className="mt-3 text-xs leading-relaxed text-muted">
+            Confirm Execute: this calls KeeperHub{" "}
+            <span className="font-mono">execute_workflow</span> on the composed
+            Sky approve. Dry-run first. Fixture replays the recorded hash — it
+            is not a new broadcast.
+          </p>
           {last?.error === "policy_reject" && last.policy.allow === false ? (
             <p className="mt-4 flex items-start gap-2 rounded-md border border-danger/30 bg-danger/10 px-3 py-2 text-sm text-fg">
               <Skull className="mt-0.5 size-4 shrink-0 text-danger" />
@@ -325,8 +365,13 @@ function Home() {
       {last?.run ? (
         <section className="rounded-xl border border-border bg-surface p-4 sm:p-6">
           <h2 className="text-sm font-medium tracking-wide uppercase">
-            Last run
+            {last.mode === "fixture" ? "Last run · recorded" : "Last run"}
           </h2>
+          {last.mode === "fixture" ? (
+            <p className="mt-2 text-sm text-muted">
+              Recorded KeeperHub hash. Not a new broadcast.
+            </p>
+          ) : null}
           <dl className="mt-4 grid gap-3 sm:grid-cols-2">
             <Fact
               label="Execution"
@@ -337,9 +382,15 @@ function Home() {
               label="Tx"
               value={last.run.txHash ?? "—"}
               href={last.run.txLink}
+              recorded={last.mode === "fixture"}
             />
             <Fact label="Status" value={last.run.status} />
-            <Fact label="Mode" value={last.mode} />
+            <Fact
+              label="Mode"
+              value={
+                last.mode === "fixture" ? "fixture · recorded" : "live MCP"
+              }
+            />
           </dl>
         </section>
       ) : null}
@@ -393,18 +444,26 @@ function Home() {
                     </td>
                     <td className="py-2 pr-3 font-mono text-xs">
                       {row.runId ? shortHash(row.runId, 4) : "—"}
+                      {row.mode === "fixture" && row.runId ? (
+                        <span className="ml-2 text-subtle">recorded</span>
+                      ) : null}
                     </td>
                     <td className="py-2 font-mono text-xs">
                       {row.txHash ? (
-                        <a
-                          className="inline-flex items-center gap-1 text-accent hover:underline"
-                          href={`https://etherscan.io/tx/${row.txHash}`}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          {shortHash(row.txHash)}
-                          <ArrowUpRight className="size-3" />
-                        </a>
+                        <span className="inline-flex flex-wrap items-center gap-1">
+                          <a
+                            className="inline-flex items-center gap-1 text-accent hover:underline"
+                            href={`https://etherscan.io/tx/${row.txHash}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {shortHash(row.txHash)}
+                            <ArrowUpRight className="size-3" />
+                          </a>
+                          {row.mode === "fixture" ? (
+                            <span className="text-subtle">recorded</span>
+                          ) : null}
+                        </span>
                       ) : (
                         "—"
                       )}
@@ -444,11 +503,12 @@ function ProvenRun() {
         Recorded KeeperHub execute
       </p>
       <p className="mt-2 text-sm text-muted">
-        {PROVEN_RUN.action} on {PROVEN_RUN.network}. Gas sponsored. Not a mock.
+        Sky approve 0 USDS for sUSDS vault · {PROVEN_RUN.network}. Gas
+        sponsored. Not a deposit. Not a mock.
       </p>
       <div className="mt-3 flex flex-col gap-2 font-mono text-xs sm:flex-row sm:flex-wrap sm:gap-x-6">
         <a
-          className="inline-flex items-center gap-1 text-fg hover:text-accent"
+          className="inline-flex min-h-11 items-center gap-1 text-fg hover:text-accent"
           href={PROVEN_RUN.executionUrl}
           target="_blank"
           rel="noreferrer"
@@ -457,7 +517,7 @@ function ProvenRun() {
           <ArrowUpRight className="size-3" />
         </a>
         <a
-          className="inline-flex items-center gap-1 text-fg hover:text-accent"
+          className="inline-flex min-h-11 items-center gap-1 text-fg hover:text-accent"
           href={PROVEN_RUN.txUrl}
           target="_blank"
           rel="noreferrer"
@@ -466,7 +526,7 @@ function ProvenRun() {
           <ArrowUpRight className="size-3" />
         </a>
         <a
-          className="inline-flex items-center gap-1 text-fg hover:text-accent"
+          className="inline-flex min-h-11 items-center gap-1 text-fg hover:text-accent"
           href={PROVEN_RUN.approveWorkflowUrl}
           target="_blank"
           rel="noreferrer"
@@ -483,10 +543,12 @@ function Fact({
   label,
   value,
   href,
+  recorded,
 }: {
   label: string;
   value: string;
   href?: string;
+  recorded?: boolean;
 }) {
   const inner = (
     <span className="break-all font-mono text-xs text-fg">{value}</span>
@@ -495,6 +557,7 @@ function Fact({
     <div>
       <dt className="font-mono text-[11px] tracking-wide text-subtle uppercase">
         {label}
+        {recorded ? " · recorded" : ""}
       </dt>
       <dd className="mt-1">
         {href ? (
