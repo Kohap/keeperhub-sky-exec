@@ -1,0 +1,18 @@
+{
+  "liveProject": "Sky (USDS/sUSDS)",
+  "network": "Ethereum mainnet",
+  "chainId": 1,
+  "wallet": "0x0f7cc9e7dadac4d885b8878b7e08761843fe781d",
+  "approveWorkflowId": "mcwzez7idnh81xj8dofz1",
+  "approveWorkflowUrl": "https://app.keeperhub.com/workflows/mcwzez7idnh81xj8dofz1",
+  "depositWorkflowId": "nmm3kwxaj90uocmrm9m5y",
+  "executionId": "r7grdajtci7hf757zd9xr",
+  "executionUrl": "https://app.keeperhub.com/executions/r7grdajtci7hf757zd9xr",
+  "txHash": "0x28a94c68511a06e77f5e0c516e893335b6c18f17caead4de3a29421072c6cc04",
+  "txUrl": "https://etherscan.io/tx/0x28a94c68511a06e77f5e0c516e893335b6c18f17caead4de3a29421072c6cc04",
+  "blockNumber": 25903693,
+  "action": "sky/approve-usds",
+  "verified": true,
+  "receiptStatus": "success",
+  "recordedAt": "2026-09-04T11:35:51.824Z"
+}

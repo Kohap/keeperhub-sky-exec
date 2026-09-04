@@ -1,0 +1,1 @@
+# JSONL audit files are gitignored. CLI writes data/audit.jsonl locally.

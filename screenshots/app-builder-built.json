@@ -1,0 +1,40 @@
+{
+  "url": "http://127.0.0.1:8081/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Sky Exec",
+      "hasCanvas": false,
+      "bodyTextLen": 925,
+      "bodyTextHash": "f41e3c79c2b4976dfde44efbb51ec32b0b97026edcb464ecac3d0236979feb96",
+      "bodyTextPrefix": "KEEPERHUB · SKY PROTOCOL Sky Exec An agent composes a Sky sUSDS ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-built.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Sky Exec",
+      "hasCanvas": false,
+      "bodyTextLen": 1464,
+      "bodyTextHash": "9c7c846b69953de76078cffd3fb1f81df1d9e2ae7a26331027ab59e98ccae3ac",
+      "bodyTextPrefix": "KEEPERHUB · SKY PROTOCOL Sky Exec An agent composes a Sky sUSDS ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-built-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-built.json",
+  "divergesFromBaseline": true,
+  "baselineReasons": [
+    "mobile: body text changed (925 -> 1464 chars, hash mismatch)"
+  ]
+}

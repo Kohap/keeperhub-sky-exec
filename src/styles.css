@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #0c0d0b;
+  --color-surface: #141511;
+  --color-surface-2: #1c1d18;
+  --color-fg: #e8e4d8;
+  --color-muted: #9a9588;
+  --color-subtle: #6f6b61;
+  --color-paper: #e8e4d8;
+  --color-accent: #8aa394;
+  --color-accent-fg: #0c0d0b;
+  --color-border: color-mix(in oklab, var(--color-fg) 12%, transparent);
+  --color-ring: #8aa394;
+  --color-danger: #b4554a;
+  --color-ok: #7d9a7a;
+  --font-display: "Fraunces", "Times New Roman", serif;
+  --font-sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --motion-quick: 150ms;
+  --motion-fast: 250ms;
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  html,
+  body {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    min-height: 100%;
+  }
+
+  body {
+    background-image: linear-gradient(
+      180deg,
+      #0c0d0b 0%,
+      #10110e 100%
+    );
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
