@@ -1,7 +1,10 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowUpRight, Check, Copy } from "lucide-react";
 import { useState } from "react";
-import { PROVEN_RUN } from "../../packages/keeperhub/src/proof.ts";
+import {
+  PROVEN_RUN,
+  RECORDED_DRY_RUN,
+} from "../../packages/keeperhub/src/proof.ts";
 import { SiteFooter, SiteNav } from "@/components/site-shell";
 import { SvStage } from "@/components/sv-stage";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -34,10 +37,25 @@ const STEPS = [
   },
 ] as const;
 
+const FACTS = [
+  { k: "Action", v: PROVEN_RUN.action },
+  { k: "Gas", v: RECORDED_DRY_RUN.gasEstimate },
+  { k: "wouldRevert", v: String(RECORDED_DRY_RUN.wouldRevert) },
+  { k: "Block", v: String(PROVEN_RUN.blockNumber) },
+] as const;
+
+const MCP = [
+  "composeIntent",
+  "validate_workflow",
+  "contract-call simulate",
+  "execute_workflow",
+  "get_execution",
+] as const;
+
 function Landing() {
   return (
     <main className="overflow-x-clip">
-      <section className="relative min-h-dvh overflow-hidden">
+      <section className="relative overflow-hidden">
         <SvStage strength={12}>
           <div className="sv-orbit">
             <img
@@ -53,29 +71,37 @@ function Landing() {
           </div>
           <div className="sv-veil bg-gradient-to-r from-bg via-bg/80 to-bg/20 sm:via-bg/70" />
         </SvStage>
-        <div className="relative z-10 mx-auto flex min-h-dvh max-w-5xl flex-col px-4 py-3 sm:px-6 sm:py-4">
-        <SiteNav />
+        <div className="relative z-10 mx-auto flex max-w-5xl flex-col px-4 py-3 sm:px-6 sm:py-4">
+          <SiteNav />
 
-        <div className="flex flex-1 flex-col justify-center gap-4 py-4 sm:gap-5 sm:py-6">
-          <ExecuteStub />
-          <div className="max-w-xl">
-            <h1 className="font-display text-2xl leading-tight tracking-display sm:text-3xl">
-              The recorded Sky approve on KeeperHub.
-            </h1>
-            <p className="mt-2 text-sm leading-normal text-muted sm:text-base">
-              A Claude/MCP agent composes a Sky sUSDS workflow. You gate it,
-              dry-run with no chain write, then that exact graph executes.
-            </p>
-            <div className="mt-4">
-              <Link
-                to="/desk"
-                className={cn(buttonVariants({ variant: "primary" }))}
-              >
-                <span className="relative z-10">Open the desk</span>
-              </Link>
+          <div className="flex flex-col gap-5 py-8 sm:gap-6 sm:py-10">
+            <ExecuteStub />
+            <div className="max-w-xl">
+              <h1 className="font-display text-2xl leading-tight tracking-display sm:text-3xl">
+                The recorded Sky approve on KeeperHub.
+              </h1>
+              <p className="mt-2 text-sm leading-normal text-muted sm:text-base">
+                A Claude/MCP agent composes a Sky sUSDS workflow. You gate it,
+                dry-run with no chain write, then that exact graph executes.
+              </p>
+              <div className="mt-4">
+                <Link
+                  to="/desk"
+                  className={cn(buttonVariants({ variant: "primary" }))}
+                >
+                  <span className="relative z-10">Open the desk</span>
+                </Link>
+              </div>
             </div>
+            <dl className="grid max-w-3xl grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-4">
+              {FACTS.map((f) => (
+                <div key={f.k}>
+                  <dt className="text-xs text-subtle">{f.k}</dt>
+                  <dd className="mt-0.5 font-mono text-sm tabular-nums">{f.v}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
-        </div>
         </div>
       </section>
 
@@ -97,14 +123,22 @@ function Landing() {
           ))}
         </ol>
 
+        <RejectStub />
+
+        <div className="mt-10 border-t border-border pt-6">
+          <p className="text-xs text-subtle">KeeperHub MCP on this run</p>
+          <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2 font-mono text-sm">
+            {MCP.map((t) => (
+              <li key={t}>{t}</li>
+            ))}
+          </ul>
+        </div>
+
         <p className="mt-10 max-w-xl text-sm leading-normal text-muted">
           Policy is cap 10 USDS, USDS and sUSDS only, Ethereum, 30s cooldown,
           kill switch. Failure path: deposit 100 USDS is rejected. Dry-run and
-          Execute never run.
-        </p>
-        <p className="mt-4 max-w-xl text-sm leading-normal text-muted">
-          Ninety seconds on the desk: Success path, Policy check, Dry-run,
-          Execute, Last run recorded.
+          Execute never run. Ninety seconds on the desk: Success path, Policy
+          check, Dry-run, Execute, Last run recorded.
         </p>
 
         <SiteFooter />
@@ -148,6 +182,21 @@ function ExecuteStub() {
         </p>
       </article>
     </div>
+  );
+}
+
+function RejectStub() {
+  return (
+    <article className="mt-10 max-w-3xl border-t border-border pt-6">
+      <p className="text-xs text-subtle">Failure path. No chain write.</p>
+      <p className="mt-2 font-display text-xl tracking-display">
+        Policy reject · deposit 100 USDS
+      </p>
+      <p className="mt-2 max-w-xl text-sm leading-normal text-muted">
+        Cap is 10 USDS. Compose still runs. Policy check returns reject.
+        Dry-run and Execute never run. That is the kill judges should see.
+      </p>
+    </article>
   );
 }
 
