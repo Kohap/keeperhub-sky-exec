@@ -88,28 +88,6 @@
 
   body {
     background-color: var(--color-bg);
-    background-image:
-      radial-gradient(
-        90rem 40rem at 110% -10%,
-        color-mix(in oklab, var(--color-accent) 12%, transparent),
-        transparent 55%
-      ),
-      radial-gradient(
-        50rem 30rem at -15% 110%,
-        color-mix(in oklab, var(--color-accent) 7%, transparent),
-        transparent 50%
-      );
-  }
-
-  body::before {
-    content: "";
-    pointer-events: none;
-    position: fixed;
-    inset: 0;
-    z-index: 50;
-    opacity: 0.07;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.9'/%3E%3C/svg%3E");
   }
 
   h1,
@@ -205,8 +183,14 @@
   }
 
   .sv-stage {
+    position: fixed;
+    inset: 0;
     z-index: 0;
-    isolation: isolate;
+    height: 100dvh;
+    width: 100%;
+    overflow: hidden;
+    contain: strict;
+    pointer-events: none;
   }
   .sv-orbit {
     position: absolute;
@@ -221,23 +205,11 @@
     top: 8%;
     right: -4rem;
     width: min(70vw, 36rem);
-    mix-blend-mode: screen;
+    opacity: 0.7;
   }
   .sv-veil {
     position: absolute;
     inset: 0;
-    pointer-events: none;
-  }
-  .sv-foot {
-    position: absolute;
-    right: -8%;
-    bottom: -6%;
-    height: min(42rem, 70vh);
-    width: min(56rem, 90vw);
-    object-fit: cover;
-    object-position: right bottom;
-    mix-blend-mode: screen;
-    opacity: 0.85;
     pointer-events: none;
   }
   @media (max-width: 639px) {
@@ -246,15 +218,6 @@
     }
     .sv-plane {
       opacity: 0.42;
-      mix-blend-mode: normal;
-    }
-    .sv-foot {
-      mix-blend-mode: normal;
-      opacity: 0.22;
-      right: -28%;
-      bottom: 0;
-      height: 16rem;
-      width: 70vw;
     }
   }
 }

@@ -46,25 +46,25 @@ export function SiteFrame({
   cube?: boolean;
 }) {
   return (
-    <div className="relative min-h-dvh overflow-x-clip">
+    <div className="relative min-h-dvh">
       <SvStage>
         <div className="sv-orbit">
           <img
             src="/visuals/sv31.jpg"
             alt=""
-            className="sv-plane h-full w-full object-cover object-[80%_bottom]"
+            className="sv-plane h-full w-full object-cover object-[80%_center]"
+            decoding="async"
           />
           {cube ? (
-            <img src="/visuals/sv47.jpg" alt="" className="sv-card" />
+            <img
+              src="/visuals/sv47.jpg"
+              alt=""
+              className="sv-card"
+              decoding="async"
+            />
           ) : null}
-          <img
-            src="/visuals/sv31.jpg"
-            alt=""
-            className="sv-foot"
-          />
         </div>
-        <div className="sv-veil bg-gradient-to-r from-bg via-bg/82 to-bg/20 sm:via-bg/70 sm:to-transparent" />
-        <div className="sv-veil bg-gradient-to-t from-bg/30 via-transparent to-transparent" />
+        <div className="sv-veil bg-gradient-to-r from-bg via-bg/82 to-bg/25 sm:via-bg/70 sm:to-bg/15" />
       </SvStage>
       <div className="relative z-10">{children}</div>
     </div>

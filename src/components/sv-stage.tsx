@@ -10,7 +10,7 @@ export function SvStage({
 }) {
   return (
     <div
-      className={cn("sv-stage pointer-events-none absolute inset-0", className)}
+      className={cn("sv-stage", className)}
       aria-hidden
     >
       {children}
