@@ -250,9 +250,11 @@
     }
     .sv-foot {
       mix-blend-mode: normal;
-      opacity: 0.45;
-      right: -20%;
-      height: 22rem;
+      opacity: 0.22;
+      right: -28%;
+      bottom: 0;
+      height: 16rem;
+      width: 70vw;
     }
   }
 }

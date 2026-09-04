@@ -70,7 +70,10 @@ function Landing() {
             <div className="mt-4">
               <Link
                 to="/desk"
-                className={cn(buttonVariants({ variant: "primary" }))}
+                className={cn(
+                  buttonVariants({ variant: "primary" }),
+                  "w-full sm:w-auto",
+                )}
               >
                 <span className="relative z-10">Open the desk</span>
               </Link>

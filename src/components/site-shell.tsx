@@ -5,7 +5,8 @@ import { PROVEN_RUN } from "../../packages/keeperhub/src/proof.ts";
 import { SvStage } from "@/components/sv-stage";
 
 const navLink = "inline-flex min-h-8 items-center text-muted hover:text-accent";
-const footLink = "inline-flex min-h-8 items-center text-sm text-fg/90 hover:text-accent";
+const footLink =
+  "inline-flex min-h-11 items-center text-sm text-fg/90 hover:text-accent";
 
 export function SiteNav() {
   return (
@@ -22,7 +23,7 @@ export function SiteNav() {
           Sky Exec
         </span>
       </Link>
-      <div className="flex shrink-0 items-center gap-3 text-xs sm:gap-5 sm:text-sm">
+      <div className="flex shrink-0 items-center gap-2.5 text-xs sm:gap-5 sm:text-sm">
         <Link to="/desk" className={navLink}>
           Desk
         </Link>
@@ -106,9 +107,9 @@ export function PageHero({
 
 export function SiteFooter() {
   return (
-    <footer className="mt-20 text-sm text-muted">
-      <div className="grid gap-10 border-t border-border/80 pt-12 sm:grid-cols-2 lg:grid-cols-4">
-        <div>
+    <footer className="mt-12 text-sm text-muted sm:mt-20">
+      <div className="relative z-10 grid grid-cols-2 gap-x-6 gap-y-8 lg:grid-cols-4 lg:gap-10 border-t border-border/80 pt-10 sm:pt-12">
+        <div className="min-w-0">
           <p className="text-xs text-subtle">Product</p>
           <ul className="mt-4 flex flex-col">
             <li>
@@ -128,7 +129,7 @@ export function SiteFooter() {
             </li>
           </ul>
         </div>
-        <div>
+        <div className="min-w-0">
           <p className="text-xs text-subtle">Developers</p>
           <ul className="mt-4 flex flex-col">
             <li>
@@ -158,7 +159,7 @@ export function SiteFooter() {
             </li>
           </ul>
         </div>
-        <div>
+        <div className="min-w-0">
           <p className="text-xs text-subtle">Legal</p>
           <ul className="mt-4 flex flex-col">
             <li>
@@ -178,14 +179,14 @@ export function SiteFooter() {
             </li>
           </ul>
         </div>
-        <div>
+        <div className="min-w-0">
           <p className="text-xs text-subtle">Trust and Social</p>
           <div className="mt-4 flex items-center gap-4">
             <a
               href="https://github.com/Kohap/keeperhub-sky-exec"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex size-8 items-center justify-center text-fg/90 hover:text-accent"
+              className="inline-flex size-11 items-center justify-center text-fg/90 hover:text-accent"
               aria-label="GitHub"
             >
               <Github className="size-4" />
@@ -200,7 +201,7 @@ export function SiteFooter() {
           </p>
         </div>
       </div>
-      <div className="mt-12 border-t border-border/80 py-6 text-center">
+      <div className="relative z-10 mt-10 border-t border-border/80 py-6 text-center sm:mt-12">
         <p>© 2026 Gift</p>
         <div className="mt-3 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs">
           <a href={PROVEN_RUN.txUrl} target="_blank" rel="noreferrer" className="hover:text-accent">
