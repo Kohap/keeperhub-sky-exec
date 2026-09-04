@@ -6,7 +6,7 @@
   --color-surface-2: #1c1d18;
   --color-fg: #e8e4d8;
   --color-muted: #9a9588;
-  --color-subtle: #6f6b61;
+  --color-subtle: #827e73;
   --color-paper: #e8e4d8;
   --color-accent: #8aa394;
   --color-accent-fg: #0c0d0b;
@@ -52,6 +52,11 @@
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  a {
+    touch-action: manipulation;
   }
 
   html {

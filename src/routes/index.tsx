@@ -7,7 +7,7 @@ import {
   Shield,
   Skull,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { AuditRecord } from "../../packages/audit/src/types.ts";
 import { stamp } from "../../packages/audit/src/memory.ts";
 import { PROVEN_RUN } from "../../packages/keeperhub/src/proof.ts";
@@ -30,6 +30,28 @@ const KEY_STORE = "sky-exec-kh-key";
 
 type SkyAction = { actionType: string; label: string; description?: string };
 
+function stageMessage(
+  busy: "compose" | "dry" | "exec" | null,
+  last: PipelineOutput | null,
+) {
+  if (busy === "compose") return "Running policy check";
+  if (busy === "dry") return "Running dry-run";
+  if (busy === "exec") return "Running execute";
+  if (!last) return "";
+  if (last.error === "policy_reject" && last.policy.allow === false)
+    return last.policy.reason;
+  if (last.error === "dry_run_fail")
+    return last.dryRun?.error ?? "Dry-run failed. Execute skipped.";
+  if (last.run)
+    return last.mode === "fixture"
+      ? "Execute recorded. Not a new broadcast."
+      : "Execute succeeded.";
+  if (last.dryRun?.ok)
+    return `Dry-run ok · gas ${last.dryRun.gasEstimate ?? "—"}`;
+  if (last.policy.allow) return "Policy allow";
+  return last.error ?? "";
+}
+
 function loadAudit(): AuditRecord[] {
   try {
     const raw = localStorage.getItem(AUDIT_KEY);
@@ -48,6 +70,7 @@ function Home() {
   const [busy, setBusy] = useState<"compose" | "dry" | "exec" | null>(null);
   const [skyActions, setSkyActions] = useState<SkyAction[]>([]);
   const [skyError, setSkyError] = useState<string | null>(null);
+  const lastRunRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     setAudit(loadAudit());
@@ -103,6 +126,9 @@ function Home() {
           mode: out.mode,
         }),
       );
+      if (kind === "exec" && out.run) {
+        queueMicrotask(() => lastRunRef.current?.focus());
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : "request failed";
       setLast((prev) => (prev ? { ...prev, error: message } : null));
@@ -117,6 +143,7 @@ function Home() {
   const hasLiveKey = apiKey.trim().startsWith("kh_");
   const fixtureBanner = !hasLiveKey || last?.mode === "fixture";
   const fixtureChip = last ? last.mode === "fixture" : !hasLiveKey;
+  const liveMessage = stageMessage(busy, last);
 
   const steps = useMemo(() => {
     const p = last?.policy;
@@ -208,14 +235,17 @@ function Home() {
       <ProvenRun />
 
       <section className="grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
-        <div className="rounded-xl bg-surface p-4 shadow-border">
+        <div
+          className="rounded-xl bg-surface p-4 shadow-border"
+          aria-busy={busy !== null}
+        >
           <div className="mb-4 flex items-center justify-between gap-3">
             <h2 className="text-sm font-medium tracking-wide uppercase">
               Compose
             </h2>
             <label
               className={cn(
-                "flex min-h-11 items-center gap-2 rounded-md px-2 font-mono text-2xs",
+                "flex min-h-11 items-center gap-2 rounded-md px-2 font-mono text-2xs focus-within:ring-2 focus-within:ring-ring",
                 killSwitch ? "bg-danger/10 text-danger" : "text-muted",
               )}
             >
@@ -228,18 +258,25 @@ function Home() {
               KILL_SWITCH
             </label>
           </div>
+          <label
+            htmlFor="workflow-prompt"
+            className="sr-only"
+          >
+            Workflow prompt
+          </label>
           <textarea
+            id="workflow-prompt"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             rows={3}
             className="w-full resize-y rounded-md bg-bg px-3 py-3 font-mono text-sm text-fg shadow-border outline-none ring-ring focus:ring-2"
-            aria-label="Workflow prompt"
           />
           <div className="mt-3 flex flex-wrap gap-2">
             <Button
               size="sm"
               variant="ghost"
               type="button"
+              aria-pressed={prompt === SUCCESS_PROMPT}
               onClick={() => setPrompt(SUCCESS_PROMPT)}
             >
               Success path
@@ -248,21 +285,25 @@ function Home() {
               size="sm"
               variant="ghost"
               type="button"
+              aria-pressed={prompt === REJECT_PROMPT}
               onClick={() => setPrompt(REJECT_PROMPT)}
             >
               Policy reject
             </Button>
           </div>
           <div className="mt-4">
-            <span className="mb-1 block font-mono text-2xs tracking-wide text-muted uppercase">
+            <label
+              htmlFor="kh-org-key"
+              className="mb-1 block font-mono text-2xs tracking-wide text-muted uppercase"
+            >
               KeeperHub org key (optional)
-            </span>
+            </label>
             <div className="flex flex-col gap-2 sm:flex-row">
               <input
+                id="kh-org-key"
                 type="password"
                 autoComplete="off"
                 placeholder="kh_…"
-                aria-label="KeeperHub org key"
                 value={apiKey}
                 onChange={(e) => {
                   const v = e.target.value;
@@ -298,9 +339,9 @@ function Home() {
               onClick={() => run("compose", () => composeAndGate(payload))}
             >
               {busy === "compose" ? (
-                <LoaderCircle className="size-4 animate-spin" />
+                <LoaderCircle className="size-4 animate-spin" aria-hidden />
               ) : (
-                <Shield className="size-4" />
+                <Shield className="size-4" aria-hidden />
               )}
               Policy check
             </Button>
@@ -311,7 +352,7 @@ function Home() {
               onClick={() => run("dry", () => dryRunPipeline(payload))}
             >
               {busy === "dry" ? (
-                <LoaderCircle className="size-4 animate-spin" />
+                <LoaderCircle className="size-4 animate-spin" aria-hidden />
               ) : null}
               Dry-run
             </Button>
@@ -321,7 +362,7 @@ function Home() {
               onClick={() => run("exec", () => executePipeline(payload))}
             >
               {busy === "exec" ? (
-                <LoaderCircle className="size-4 animate-spin" />
+                <LoaderCircle className="size-4 animate-spin" aria-hidden />
               ) : null}
               Execute
             </Button>
@@ -332,15 +373,22 @@ function Home() {
             Sky approve. Dry-run first. Fixture replays the recorded hash — it
             is not a new broadcast.
           </p>
+          <p
+            role="status"
+            aria-live="polite"
+            className="mt-2 min-h-5 text-xs text-muted"
+          >
+            {liveMessage}
+          </p>
           {last?.error === "policy_reject" && last.policy.allow === false ? (
             <p className="mt-4 flex items-start gap-2 rounded-md bg-danger/10 px-3 py-2 text-sm text-fg shadow-border">
-              <Skull className="mt-0.5 size-4 shrink-0 text-danger" />
+              <Skull className="mt-0.5 size-4 shrink-0 text-danger" aria-hidden />
               {last.policy.reason}
             </p>
           ) : null}
           {last?.error === "dry_run_fail" ? (
             <p className="mt-4 flex items-start gap-2 rounded-md bg-danger/10 px-3 py-2 text-sm text-fg shadow-border">
-              <CircleAlert className="mt-0.5 size-4 shrink-0 text-danger" />
+              <CircleAlert className="mt-0.5 size-4 shrink-0 text-danger" aria-hidden />
               {last.dryRun?.error ?? "Dry-run failed. Execute skipped."}
             </p>
           ) : null}
@@ -350,7 +398,22 @@ function Home() {
           {steps.map((s, i) => (
             <li
               key={s.id}
-              className="rounded-lg bg-surface px-4 py-4 shadow-border"
+              aria-current={
+                (busy === "compose" &&
+                  (s.id === "compose" || s.id === "policy")) ||
+                (busy === "dry" && s.id === "dry") ||
+                (busy === "exec" && s.id === "exec")
+                  ? "step"
+                  : undefined
+              }
+              className={cn(
+                "rounded-lg bg-surface px-4 py-4 shadow-border",
+                ((busy === "compose" &&
+                  (s.id === "compose" || s.id === "policy")) ||
+                  (busy === "dry" && s.id === "dry") ||
+                  (busy === "exec" && s.id === "exec")) &&
+                  "ring-2 ring-ring",
+              )}
             >
               <div className="flex items-baseline justify-between gap-3">
                 <p className="font-mono text-2xs tabular-nums text-subtle">
@@ -369,7 +432,11 @@ function Home() {
 
       {last?.run ? (
         <section className="rounded-xl bg-surface p-4 shadow-border">
-          <h2 className="text-sm font-medium tracking-wide uppercase">
+          <h2
+            ref={lastRunRef}
+            tabIndex={-1}
+            className="text-sm font-medium tracking-wide uppercase outline-none"
+          >
             {last.mode === "fixture" ? "Last run · recorded" : "Last run"}
           </h2>
           {last.mode === "fixture" ? (
@@ -606,6 +673,7 @@ function Fact({
 function StatusChip({ ok, label }: { ok: boolean; label: string }) {
   return (
     <span
+      role="status"
       className={cn(
         "inline-flex h-8 items-center rounded-full px-3 font-mono text-2xs shadow-border",
         ok ? "text-ok" : "text-muted",
