@@ -35,7 +35,21 @@ const STEPS = [
 function Landing() {
   return (
     <main className="overflow-x-clip">
-      <section className="relative mx-auto flex min-h-dvh max-w-5xl flex-col px-4 py-3 sm:px-6 sm:py-4">
+      <section className="relative min-h-dvh overflow-hidden">
+        <div className="pointer-events-none absolute inset-0" aria-hidden>
+          <img
+            src="/visuals/sv31.jpg"
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover object-right"
+          />
+          <img
+            src="/visuals/sv47.jpg"
+            alt=""
+            className="absolute -right-16 top-[8%] w-[min(70vw,36rem)] mix-blend-screen sm:-right-10 sm:top-[4%] sm:w-[min(52vw,38rem)]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/80 to-bg/20 sm:via-bg/70" />
+        </div>
+        <div className="relative z-10 mx-auto flex min-h-dvh max-w-5xl flex-col px-4 py-3 sm:px-6 sm:py-4">
         <nav className="flex items-center justify-between gap-3 rounded-full bg-surface-2 px-4 py-2">
           <p className="font-display text-base tracking-display">Sky Exec</p>
           <div className="flex items-center gap-4 text-sm">
@@ -80,6 +94,7 @@ function Landing() {
               </Link>
             </div>
           </div>
+        </div>
         </div>
       </section>
 
@@ -138,17 +153,8 @@ function Landing() {
 function ExecuteStub() {
   return (
     <div className="relative max-w-3xl overflow-x-clip">
-      <VaultStamp />
       <article className="kh-stub bg-surface-2 py-4 pr-6 pl-8 sm:py-5 sm:pr-10 sm:pl-10">
         <p className="flex items-start gap-2 text-sm text-muted">
-          <svg
-            className="mt-0.5 h-5 w-5 shrink-0 text-accent sm:hidden"
-            viewBox="0 0 96 96"
-            aria-hidden
-          >
-            <rect x="16" y="16" width="64" height="64" rx="6" fill="none" stroke="currentColor" strokeWidth="6" />
-            <rect x="40" y="40" width="16" height="16" fill="currentColor" opacity="0.45" />
-          </svg>
           <span>
             Sky approve 0 USDS for sUSDS vault · {PROVEN_RUN.network} · block{" "}
             {PROVEN_RUN.blockNumber}
@@ -158,7 +164,7 @@ function ExecuteStub() {
           href={PROVEN_RUN.txUrl}
           target="_blank"
           rel="noreferrer"
-          className="mt-2 block break-all font-mono text-lg leading-snug text-fg tabular-nums hover:text-accent sm:pr-16 sm:text-xl"
+          className="mt-2 block break-all font-mono text-lg leading-snug text-fg tabular-nums hover:text-accent sm:text-xl"
         >
           {PROVEN_RUN.txHash}
         </a>
@@ -179,46 +185,6 @@ function ExecuteStub() {
         </p>
       </article>
     </div>
-  );
-}
-
-function VaultStamp() {
-  return (
-    <svg
-      className="pointer-events-none absolute -top-9 right-2 z-10 hidden h-24 w-24 rotate-12 text-accent sm:block sm:h-28 sm:w-28"
-      viewBox="0 0 96 96"
-      aria-hidden
-    >
-      <rect
-        x="16"
-        y="16"
-        width="64"
-        height="64"
-        rx="6"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <rect
-        x="28"
-        y="28"
-        width="40"
-        height="40"
-        rx="3"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        opacity="0.75"
-      />
-      <rect
-        x="40"
-        y="40"
-        width="16"
-        height="16"
-        fill="currentColor"
-        opacity="0.45"
-      />
-    </svg>
   );
 }
 
