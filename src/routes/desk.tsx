@@ -293,7 +293,10 @@ function Home() {
             KeeperHub · Sky Protocol
           </p>
           <h1 className="mt-1 font-display text-2xl leading-tight tracking-display text-fg">
-            <Link to="/" className="hover:text-accent">
+            <Link
+              to="/"
+              className="hover:text-accent focus-visible:text-accent"
+            >
               Sky Exec
             </Link>
           </h1>
