@@ -3,6 +3,7 @@ import { ArrowUpRight, Check, Copy } from "lucide-react";
 import { useState } from "react";
 import { PROVEN_RUN } from "../../packages/keeperhub/src/proof.ts";
 import { SiteFooter, SiteNav } from "@/components/site-shell";
+import { SvStage } from "@/components/sv-stage";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -37,19 +38,21 @@ function Landing() {
   return (
     <main className="overflow-x-clip">
       <section className="relative min-h-dvh overflow-hidden">
-        <div className="sv-stage pointer-events-none absolute inset-0" aria-hidden>
-          <img
-            src="/visuals/sv31.jpg"
-            alt=""
-            className="sv-drift absolute inset-0 h-full w-full object-cover object-right"
-          />
-          <img
-            src="/visuals/sv47.jpg"
-            alt=""
-            className="sv-float absolute -right-16 top-[8%] w-[min(70vw,36rem)] mix-blend-screen sm:-right-10 sm:top-[4%] sm:w-[min(52vw,38rem)]"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/80 to-bg/20 sm:via-bg/70" />
-        </div>
+        <SvStage strength={12}>
+          <div className="sv-orbit">
+            <img
+              src="/visuals/sv31.jpg"
+              alt=""
+              className="sv-plane sv-drift h-full w-full object-cover object-right"
+            />
+            <img
+              src="/visuals/sv47.jpg"
+              alt=""
+              className="sv-card sv-float"
+            />
+          </div>
+          <div className="sv-veil bg-gradient-to-r from-bg via-bg/80 to-bg/20 sm:via-bg/70" />
+        </SvStage>
         <div className="relative z-10 mx-auto flex min-h-dvh max-w-5xl flex-col px-4 py-3 sm:px-6 sm:py-4">
         <SiteNav />
 

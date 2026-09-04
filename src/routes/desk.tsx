@@ -17,6 +17,7 @@ import {
   loadLimitsFromEnv,
 } from "../../packages/policy/src/index.ts";
 import { Button } from "@/components/ui/button";
+import { SvStage } from "@/components/sv-stage";
 import { cn, shortHash } from "@/lib/utils";
 import {
   composeAndGate,
@@ -287,16 +288,18 @@ function Home() {
 
   return (
     <div className="relative min-h-screen overflow-x-clip">
-      <div className="sv-stage pointer-events-none absolute inset-0" aria-hidden>
-        <img
-          src="/visuals/sv31.jpg"
-          alt=""
-          className="sv-drift absolute inset-0 h-full w-full object-cover object-[80%_center] opacity-50 mix-blend-screen"
-        />
-        <div className="absolute inset-0 bg-[radial-gradient(48rem_24rem_at_100%_0%,color-mix(in_oklab,var(--color-accent)_22%,transparent),transparent_62%)]" />
-        <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/88 to-bg/55" />
-        <div className="absolute inset-0 bg-gradient-to-b from-bg/20 via-transparent to-bg" />
-      </div>
+      <SvStage strength={6}>
+        <div className="sv-orbit">
+          <img
+            src="/visuals/sv31.jpg"
+            alt=""
+            className="sv-plane sv-drift h-full w-full object-cover object-[80%_center] opacity-50 mix-blend-screen"
+          />
+        </div>
+        <div className="sv-veil bg-[radial-gradient(48rem_24rem_at_100%_0%,color-mix(in_oklab,var(--color-accent)_22%,transparent),transparent_62%)]" />
+        <div className="sv-veil bg-gradient-to-r from-bg via-bg/88 to-bg/55" />
+        <div className="sv-veil bg-gradient-to-b from-bg/20 via-transparent to-bg" />
+      </SvStage>
       <main className="rise-in relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col gap-4 px-4 py-5 sm:gap-5 sm:px-6 sm:py-6">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="max-w-2xl">
