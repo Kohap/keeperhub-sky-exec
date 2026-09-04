@@ -1,21 +1,29 @@
 import { Link } from "@tanstack/react-router";
 import { PROVEN_RUN } from "../../packages/keeperhub/src/proof.ts";
 
+const navLink = "inline-flex min-h-8 items-center text-muted hover:text-accent";
+
 export function SiteNav() {
   return (
     <nav className="flex items-center justify-between gap-3 rounded-full bg-surface-2 px-4 py-2">
       <Link to="/" className="flex min-h-8 items-center gap-2">
-        <img src="/logo.png" alt="" width={28} height={28} className="size-7 rounded-md" />
+        <img
+          src="/logo.png"
+          alt=""
+          width={28}
+          height={28}
+          className="size-7 rounded-md"
+        />
         <span className="font-display text-base tracking-display">Sky Exec</span>
       </Link>
-      <div className="flex items-center gap-4 text-sm">
-        <Link to="/desk" className="text-muted hover:text-accent">
+      <div className="flex items-center gap-5 text-sm">
+        <Link to="/desk" className={navLink}>
           Desk
         </Link>
-        <Link to="/faq" className="text-muted hover:text-accent">
+        <Link to="/faq" className={navLink}>
           FAQ
         </Link>
-        <Link to="/social" className="text-muted hover:text-accent">
+        <Link to="/social" className={navLink}>
           Social
         </Link>
       </div>
@@ -33,36 +41,22 @@ export function SiteFooter() {
         protocol.
       </p>
       <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
-        <Link to="/faq" className="hover:text-accent">
-          FAQ
-        </Link>
-        <Link to="/social" className="hover:text-accent">
-          Social
-        </Link>
-        <Link to="/legal" className="hover:text-accent">
+        <Link to="/legal" className="inline-flex min-h-8 items-center hover:text-accent">
           Legal
         </Link>
         <a
           href="https://github.com/Kohap/keeperhub-sky-exec"
           target="_blank"
           rel="noreferrer"
-          className="hover:text-accent"
+          className="inline-flex min-h-8 items-center hover:text-accent"
         >
           GitHub
-        </a>
-        <a
-          href="https://x.com/gift0x4"
-          target="_blank"
-          rel="noreferrer"
-          className="hover:text-accent"
-        >
-          X
         </a>
         <a
           href={PROVEN_RUN.executionUrl}
           target="_blank"
           rel="noreferrer"
-          className="hover:text-accent"
+          className="inline-flex min-h-8 items-center hover:text-accent"
         >
           KeeperHub run
         </a>
