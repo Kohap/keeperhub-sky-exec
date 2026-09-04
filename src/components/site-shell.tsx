@@ -180,22 +180,22 @@ export function SiteFooter() {
           </ul>
         </div>
         <div className="min-w-0">
-          <p className="text-xs text-subtle">Trust and Social</p>
+          <p className="text-sm font-medium text-fg">Trust and Social</p>
           <div className="mt-4 flex items-center gap-4">
             <a
               href="https://github.com/Kohap/keeperhub-sky-exec"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex size-11 items-center justify-center text-fg/90 hover:text-accent"
+              className="inline-flex size-11 items-center justify-center text-fg hover:text-accent"
               aria-label="GitHub"
             >
-              <Github className="size-4" />
+              <Github className="size-5" />
             </a>
-            <Link to="/social" className={footLink}>
+            <Link to="/social" className="inline-flex min-h-11 items-center text-sm font-medium text-fg hover:text-accent">
               Social
             </Link>
           </div>
-          <p className="mt-3 max-w-xs text-xs leading-snug text-subtle">
+          <p className="mt-3 max-w-xs text-sm font-medium leading-snug text-fg">
             The code is open source. Auditing questions and KeeperHub
             integration notes are on GitHub.
           </p>
