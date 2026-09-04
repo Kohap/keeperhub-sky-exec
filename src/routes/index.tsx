@@ -382,7 +382,7 @@ function Home() {
               href={last.run.txLink}
               target="_blank"
               rel="noreferrer"
-              className="mt-4 block break-all font-mono text-lg leading-snug text-fg tabular-nums hover:text-accent sm:text-xl"
+              className="mt-4 block break-all font-mono text-xl leading-snug text-fg tabular-nums hover:text-accent"
             >
               {last.run.txHash}
             </a>
@@ -521,7 +521,7 @@ function ProvenRun() {
         href={PROVEN_RUN.txUrl}
         target="_blank"
         rel="noreferrer"
-        className="mt-3 block break-all font-mono text-lg leading-snug text-fg tabular-nums hover:text-accent sm:text-xl"
+        className="mt-3 block break-all font-mono text-xl leading-snug text-fg tabular-nums hover:text-accent"
       >
         {PROVEN_RUN.txHash}
       </a>

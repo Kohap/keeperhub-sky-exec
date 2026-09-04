@@ -12,6 +12,8 @@ This repo is the **agent + policy + dry-run + audit glue**. Sky Protocol is the 
 | --- | --- |
 | Live project | **Sky (USDS / sUSDS)** |
 | GitHub | [Kohap/keeperhub-sky-exec](https://github.com/Kohap/keeperhub-sky-exec) |
+| Demo | [keeperhub-sky-exec.vercel.app](https://keeperhub-sky-exec.vercel.app/) |
+| Figma | [Sky Exec desk](https://www.figma.com/design/NY2QOot7eDDTyHhbSXteHT) |
 | Proof commit | [`588cf00`](https://github.com/Kohap/keeperhub-sky-exec/commit/588cf000a1659ce9b82219f9e6facfd33e9d2084) |
 | KeeperHub surfaces | MCP (`create_workflow`, `validate_workflow`, `execute_workflow`, `get_execution`, `list_action_schemas`, `search_protocol_actions`, `execute_protocol_action`), REST simulate (`POST /api/execute/contract-call` with `simulate: true`), audit trail, CLI |
 | Network | **Ethereum mainnet** (Sky plugin has no testnet). Gas was KeeperHub-sponsored. Amount was **0 USDS approve** so no savings moved. |
