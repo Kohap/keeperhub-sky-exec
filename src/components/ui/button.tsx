@@ -2,7 +2,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import type { ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-const buttonVariants = cva(
+export const buttonVariants = cva(
   "relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-md text-sm font-medium touch-manipulation transition-[opacity,transform,background-color,box-shadow,color] duration-(--motion-fast) ease-(--ease-out) hover:duration-(--motion-fast) hover:ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:pointer-events-none disabled:opacity-40 active:scale-[var(--scale-press)]",
   {
     variants: {

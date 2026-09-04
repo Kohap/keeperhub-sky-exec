@@ -1,6 +1,6 @@
 # 90-second video script
 
-On screen: Sky Exec UI + a terminal. Clock starts.
+On screen: Sky Exec landing → **Open the desk**. Clock starts after the desk is up.
 
 **0:00–0:12 — one-liner**
 > Sky Protocol is the live savings market. KeeperHub is the execution layer. This agent composes a Sky sUSDS workflow, I gate it, dry-run it, then KeeperHub runs that exact graph.
