@@ -16,7 +16,8 @@ import {
   ALLOWED_ASSETS,
   loadLimitsFromEnv,
 } from "../../packages/policy/src/index.ts";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { SiteNav } from "@/components/site-shell";
 import { SvStage } from "@/components/sv-stage";
 import { cn, shortHash } from "@/lib/utils";
 import {
@@ -301,6 +302,7 @@ function Home() {
         <div className="sv-veil bg-gradient-to-b from-bg/20 via-transparent to-bg" />
       </SvStage>
       <main className="rise-in relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col gap-4 px-4 py-5 sm:gap-5 sm:px-6 sm:py-6">
+      <SiteNav />
       <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="max-w-2xl">
           <p className="text-xs text-muted">
@@ -326,6 +328,12 @@ function Home() {
             via KeeperHub. Not a completed deposit. You review it, dry-run with
             no chain write, then that exact workflow executes.
           </p>
+          <a
+            href="#compose"
+            className={cn(buttonVariants({ variant: "primary" }), "mt-4")}
+          >
+            <span className="relative z-10">Open the desk</span>
+          </a>
         </div>
         <div className="flex flex-wrap gap-1.5">
           <StatusChip
@@ -367,6 +375,7 @@ function Home() {
 
       <section className="grid gap-3 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
         <div
+          id="compose"
           className="surface-hover rounded-lg bg-surface p-3"
           aria-busy={busy !== null}
         >
