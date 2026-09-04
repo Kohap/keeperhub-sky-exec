@@ -14,7 +14,7 @@ This repo is the **agent + policy + dry-run + audit glue**. Sky Protocol is the 
 | GitHub | [Kohap/keeperhub-sky-exec](https://github.com/Kohap/keeperhub-sky-exec) |
 | Demo | [keeperhub-sky-exec.vercel.app](https://keeperhub-sky-exec.vercel.app/) |
 | Figma | [Sky Exec desk](https://www.figma.com/design/NY2QOot7eDDTyHhbSXteHT) |
-| Proof commit | [`588cf00`](https://github.com/Kohap/keeperhub-sky-exec/commit/588cf000a1659ce9b82219f9e6facfd33e9d2084) |
+| Proof commit | [`588cf00`](https://github.com/Kohap/keeperhub-sky-exec/commit/588cf000a1659ce9b82219f9e6facfd33e9d2084) (first execute). Desk: `main`. |
 | KeeperHub surfaces | MCP (`create_workflow`, `validate_workflow`, `execute_workflow`, `get_execution`, `list_action_schemas`, `search_protocol_actions`, `execute_protocol_action`), REST simulate (`POST /api/execute/contract-call` with `simulate: true`), audit trail, CLI |
 | Network | **Ethereum mainnet** (Sky plugin has no testnet). Gas was KeeperHub-sponsored. Amount was **0 USDS approve** so no savings moved. |
 | Workflow | `mcwzez7idnh81xj8dofz1` · [open](https://app.keeperhub.com/workflows/mcwzez7idnh81xj8dofz1) |
@@ -47,13 +47,13 @@ Policy hides: max amount (default 10 USDS), allowlisted action types, allowliste
 ## 90-second demo
 
 1. Prompt: `approve 0 USDS for the sUSDS vault`
-2. Policy allow.
-3. Dry-run: REST simulate of `USDS.approve(sUSDS, 0)` → `wouldRevert: false`.
-4. Execute: MCP `execute_workflow` → run `r7grdajtci7hf757zd9xr`.
-5. Explorer hash on Ethereum.
+2. Policy line: cap 10 USDS, allowlist, cooldown, kill switch. **Policy check** → allow.
+3. **Dry-run**: REST simulate of `USDS.approve(sUSDS, 0)` → `wouldRevert: false`, gas on the confirm strip. MCP log shows `contract-call simulate`.
+4. **Execute**: MCP `execute_workflow` → run `r7grdajtci7hf757zd9xr`. Copy hash.
+5. Explorer hash on Ethereum. Fixture labels say **recorded**.
 6. Failure path: `npm run compose -- "deposit spare USDS above 100 into sUSDS"` → **policy reject** (100 > cap 10). Toggle `KILL_SWITCH` to see the other reject.
 
-Script: [`docs/VIDEO.md`](docs/VIDEO.md).
+Script: [`docs/VIDEO.md`](docs/VIDEO.md). Capture: [`docs/demo-90s.mp4`](docs/demo-90s.mp4).
 
 ## CLI
 

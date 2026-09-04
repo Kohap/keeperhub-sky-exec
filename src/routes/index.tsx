@@ -3,6 +3,7 @@ import {
   ArrowUpRight,
   Check,
   CircleAlert,
+  Copy,
   LoaderCircle,
   Shield,
   Skull,
@@ -11,6 +12,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { AuditRecord } from "../../packages/audit/src/types.ts";
 import { stamp } from "../../packages/audit/src/memory.ts";
 import { PROVEN_RUN } from "../../packages/keeperhub/src/proof.ts";
+import {
+  ALLOWED_ASSETS,
+  loadLimitsFromEnv,
+} from "../../packages/policy/src/index.ts";
 import { Button } from "@/components/ui/button";
 import { cn, shortHash } from "@/lib/utils";
 import {
@@ -27,6 +32,7 @@ const REJECT_PROMPT = "deposit spare USDS above 100 into sUSDS";
 const SUCCESS_PROMPT = "approve 0 USDS for the sUSDS vault";
 const AUDIT_KEY = "sky-exec-audit-v1";
 const KEY_STORE = "sky-exec-kh-key";
+const LAST_EXEC_KEY = "sky-exec-last-exec";
 
 type SkyAction = { actionType: string; label: string; description?: string };
 
@@ -52,6 +58,75 @@ function stageMessage(
   return last.error ?? "";
 }
 
+type McpLine = {
+  tool: string;
+  detail: string;
+  state: "idle" | "run" | "done" | "fail";
+};
+
+function mcpLines(
+  busy: "compose" | "dry" | "exec" | null,
+  last: PipelineOutput | null,
+): McpLine[] {
+  const lines: McpLine[] = [];
+  if (busy === "compose" || last) {
+    lines.push({
+      tool: "composeIntent",
+      detail: last?.intent
+        ? `${last.intent.actionType} · ${last.intent.amountHuman} ${last.intent.asset}`
+        : "MCP workflow from the prompt",
+      state: last ? "done" : "run",
+    });
+    lines.push({
+      tool: "assertAllowed",
+      detail:
+        last?.policy.allow === true
+          ? "allow"
+          : last?.policy.allow === false
+            ? last.policy.reason
+            : "cap · allowlist · cooldown · kill switch",
+      state: last
+        ? last.policy.allow
+          ? "done"
+          : "fail"
+        : "run",
+    });
+  }
+  if (busy === "dry" || last?.dryRun) {
+    const d = last?.dryRun;
+    lines.push({
+      tool: "validate_workflow",
+      detail: last?.workflowName ?? "Sky approve",
+      state: d ? (d.ok ? "done" : "fail") : "run",
+    });
+    lines.push({
+      tool: "contract-call simulate",
+      detail: d
+        ? `wouldRevert ${String(d.wouldRevert ?? !d.ok)} · gas ${d.gasEstimate ?? "—"}`
+        : "no chain write",
+      state: d ? (d.ok ? "done" : "fail") : "run",
+    });
+  }
+  if (busy === "exec" || last?.run) {
+    const r = last?.run;
+    lines.push({
+      tool: "execute_workflow",
+      detail: r
+        ? `${r.executionId}${last?.mode === "fixture" ? " · recorded" : ""}`
+        : "KeeperHub execute_workflow",
+      state: r ? (r.status === "success" ? "done" : "fail") : "run",
+    });
+    lines.push({
+      tool: "get_execution",
+      detail: r
+        ? `${r.status}${r.txHash ? ` · ${shortHash(r.txHash)}` : ""}`
+        : "KeeperHub get_execution",
+      state: r ? (r.status === "success" ? "done" : "fail") : "run",
+    });
+  }
+  return lines;
+}
+
 function loadAudit(): AuditRecord[] {
   try {
     const raw = localStorage.getItem(AUDIT_KEY);
@@ -70,12 +145,18 @@ function Home() {
   const [busy, setBusy] = useState<"compose" | "dry" | "exec" | null>(null);
   const [skyActions, setSkyActions] = useState<SkyAction[]>([]);
   const [skyError, setSkyError] = useState<string | null>(null);
+  const [lastExecuteAtMs, setLastExecuteAtMs] = useState<number | undefined>();
   const lastRunRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     setAudit(loadAudit());
     try {
       setApiKey(sessionStorage.getItem(KEY_STORE) ?? "");
+      const raw = sessionStorage.getItem(LAST_EXEC_KEY);
+      if (raw) {
+        const n = Number(raw);
+        if (Number.isFinite(n)) setLastExecuteAtMs(n);
+      }
     } catch {
       /* ignore */
     }
@@ -127,6 +208,13 @@ function Home() {
         }),
       );
       if (kind === "exec" && out.run) {
+        const at = Date.now();
+        setLastExecuteAtMs(at);
+        try {
+          sessionStorage.setItem(LAST_EXEC_KEY, String(at));
+        } catch {
+          /* ignore */
+        }
         queueMicrotask(() => lastRunRef.current?.focus());
       }
     } catch (err) {
@@ -139,11 +227,21 @@ function Home() {
 
   const policyBlocked =
     last?.policy.allow === false && last.intent.prompt === prompt;
-  const payload = { data: { prompt, apiKey, killSwitch } };
+  const payload = { data: { prompt, apiKey, killSwitch, lastExecuteAtMs } };
   const hasLiveKey = apiKey.trim().startsWith("kh_");
   const fixtureBanner = !hasLiveKey || last?.mode === "fixture";
   const fixtureChip = last ? last.mode === "fixture" : !hasLiveKey;
   const liveMessage = stageMessage(busy, last);
+  const limits = loadLimitsFromEnv(undefined, { killSwitch, lastExecuteAtMs });
+  const cooldownLeft =
+    lastExecuteAtMs && limits.cooldownSeconds > 0
+      ? Math.max(
+          0,
+          limits.cooldownSeconds -
+            Math.floor((Date.now() - lastExecuteAtMs) / 1000),
+        )
+      : 0;
+  const log = mcpLines(busy, last);
 
   const steps = useMemo(() => {
     const p = last?.policy;
@@ -221,6 +319,13 @@ function Home() {
           <StatusChip ok label="Ethereum mainnet" />
         </div>
       </header>
+
+      <p className="font-mono text-2xs leading-snug text-muted">
+        Policy · cap {limits.maxAmountHuman} USDS · {ALLOWED_ASSETS.join("/")} ·
+        chain {limits.chainId} · cooldown {limits.cooldownSeconds}s
+        {killSwitch ? " · KILL_SWITCH" : ""}
+        {cooldownLeft > 0 ? ` · cooling ${cooldownLeft}s` : ""}
+      </p>
 
       {fixtureBanner ? (
         <div
@@ -367,6 +472,18 @@ function Home() {
               Execute
             </Button>
           </div>
+          {last?.dryRun ? (
+            <p
+              className={cn(
+                "mt-2 rounded-md px-3 py-2 font-mono text-2xs leading-snug shadow-border",
+                last.dryRun.ok ? "text-ok" : "text-danger",
+              )}
+            >
+              Dry-run {last.dryRun.ok ? "ok" : "fail"} · wouldRevert{" "}
+              {String(last.dryRun.wouldRevert ?? !last.dryRun.ok)} · gas{" "}
+              {last.dryRun.gasEstimate ?? "—"} · no chain write
+            </p>
+          ) : null}
           <p className="mt-2 text-xs leading-snug text-muted">
             Confirm Execute: this calls KeeperHub{" "}
             <span className="font-mono">execute_workflow</span> on the composed
@@ -394,6 +511,7 @@ function Home() {
           ) : null}
         </div>
 
+        <div className="flex flex-col gap-3">
         <ol className="overflow-hidden rounded-lg bg-surface shadow-border">
           {steps.map((s, i) => (
             <li
@@ -428,6 +546,33 @@ function Home() {
             </li>
           ))}
         </ol>
+        <section className="rounded-lg bg-surface p-3 shadow-border">
+          <h2 className="mb-1 font-mono text-2xs font-medium tracking-wide uppercase">
+            MCP log
+          </h2>
+          {log.length === 0 ? (
+            <p className="text-xs text-muted">
+              Empty. Run a policy check, dry-run, or execute.
+            </p>
+          ) : (
+            <ol>
+              {log.map((line) => (
+                <li
+                  key={line.tool}
+                  className="flex items-baseline justify-between gap-3 border-b border-border py-1.5 last:border-b-0"
+                >
+                  <span className="font-mono text-2xs text-accent">
+                    {line.tool}
+                  </span>
+                  <span className="min-w-0 truncate text-right font-mono text-2xs text-muted">
+                    {line.detail}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          )}
+        </section>
+        </div>
       </section>
 
       {last?.run ? (
@@ -445,14 +590,17 @@ function Home() {
             </p>
           ) : null}
           {last.run.txHash ? (
-            <a
-              href={last.run.txLink}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-2 block break-all font-mono text-lg leading-snug text-fg tabular-nums hover:text-accent"
-            >
-              {last.run.txHash}
-            </a>
+            <div className="mt-2 flex flex-wrap items-start gap-2">
+              <a
+                href={last.run.txLink}
+                target="_blank"
+                rel="noreferrer"
+                className="min-w-0 flex-1 break-all font-mono text-lg leading-snug text-fg tabular-nums hover:text-accent"
+              >
+                {last.run.txHash}
+              </a>
+              <CopyHash value={last.run.txHash} />
+            </div>
           ) : null}
           <dl className="mt-2 divide-y divide-border">
             <Fact
@@ -578,6 +726,27 @@ function Home() {
   );
 }
 
+function CopyHash({ value }: { value: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <Button
+      type="button"
+      size="sm"
+      variant="ghost"
+      className="shrink-0"
+      onClick={() => {
+        void navigator.clipboard.writeText(value).then(() => {
+          setCopied(true);
+          window.setTimeout(() => setCopied(false), 1500);
+        });
+      }}
+    >
+      {copied ? <Check className="size-3" aria-hidden /> : <Copy className="size-3" aria-hidden />}
+      {copied ? "Copied" : "Copy hash"}
+    </Button>
+  );
+}
+
 function ProvenRun() {
   return (
     <aside className="rounded-lg bg-surface-2 p-3 shadow-border">
@@ -592,6 +761,9 @@ function ProvenRun() {
       >
         {PROVEN_RUN.txHash}
       </a>
+      <div className="mt-1.5 flex flex-wrap items-center gap-2">
+        <CopyHash value={PROVEN_RUN.txHash} />
+      </div>
       <p className="mt-1.5 text-xs leading-snug text-muted">
         Sky approve 0 USDS for sUSDS vault · {PROVEN_RUN.network}. Gas
         sponsored. Not a deposit. Not a mock.

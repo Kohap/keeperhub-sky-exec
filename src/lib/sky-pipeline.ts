@@ -19,6 +19,7 @@ export type PipelineInput = {
   prompt: string;
   apiKey?: string;
   killSwitch?: boolean;
+  lastExecuteAtMs?: number;
 };
 
 export type PipelineStage = "compose" | "dry" | "exec";
@@ -53,7 +54,10 @@ export async function runPipeline(
   const intent = composeIntent(data.prompt);
   const policy = assertAllowed(
     intent,
-    loadLimitsFromEnv(process.env, { killSwitch: data.killSwitch }),
+    loadLimitsFromEnv(process.env, {
+      killSwitch: data.killSwitch,
+      lastExecuteAtMs: data.lastExecuteAtMs,
+    }),
   );
   const workflow = workflowFromIntent(intent);
   const { kh, mode } = pickClient(data.apiKey);

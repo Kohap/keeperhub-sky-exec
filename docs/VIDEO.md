@@ -28,6 +28,8 @@ Policy reject: amount 100 exceeds cap 10 USDS. Audit row `reject`. Optionally fl
 **1:25–1:30 — close**
 Point at [github.com/Kohap/keeperhub-sky-exec](https://github.com/Kohap/keeperhub-sky-exec), run URL, explorer hash. Stop.
 
+Capture in-repo: [`docs/demo-90s.mp4`](demo-90s.mp4). Re-record with `node scripts/record-90s.mjs` while `npm run dev` is on :8080.
+
 ## Before recording — GitHub
 
 DoraHacks needs that public source URL live. Create the empty repo, then push:
