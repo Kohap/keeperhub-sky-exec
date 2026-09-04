@@ -53,7 +53,7 @@ const MCP = [
 
 function Landing() {
   return (
-    <SiteFrame cube>
+    <SiteFrame>
       <div className="mx-auto flex max-w-5xl flex-col px-4 py-3 sm:px-6 sm:py-4">
         <SiteNav />
 

@@ -40,10 +40,8 @@ export function SiteNav() {
 
 export function SiteFrame({
   children,
-  cube = false,
 }: {
   children: ReactNode;
-  cube?: boolean;
 }) {
   return (
     <div className="relative min-h-dvh">
@@ -55,14 +53,6 @@ export function SiteFrame({
             className="sv-plane h-full w-full object-cover object-[80%_center]"
             decoding="async"
           />
-          {cube ? (
-            <img
-              src="/visuals/sv47.jpg"
-              alt=""
-              className="sv-card"
-              decoding="async"
-            />
-          ) : null}
         </div>
         <div className="sv-veil bg-gradient-to-r from-bg via-bg/82 to-bg/25 sm:via-bg/70 sm:to-bg/15" />
       </SvStage>
