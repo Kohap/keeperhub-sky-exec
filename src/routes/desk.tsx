@@ -634,7 +634,11 @@ function Home() {
             <Fact
               label="Execution"
               value={last.run.executionId}
-              href={`https://app.keeperhub.com/executions/${last.run.executionId}`}
+              href={
+                last.run.workflowId
+                  ? `https://app.keeperhub.com/workflows/${last.run.workflowId}`
+                  : last.run.txLink || PROVEN_RUN.keeperhubOpenUrl
+              }
             />
             <Fact
               label="Tx"
@@ -800,7 +804,7 @@ function ProvenRun() {
       <div className="mt-1.5 flex flex-wrap gap-x-4 font-mono text-xs">
         <a
           className="group inline-flex min-h-8 items-center gap-1 text-muted hover:text-accent"
-          href={PROVEN_RUN.executionUrl}
+          href={PROVEN_RUN.keeperhubOpenUrl}
           target="_blank"
           rel="noreferrer"
         >

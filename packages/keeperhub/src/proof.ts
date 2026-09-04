@@ -25,6 +25,12 @@ export const PROVEN_RUN = {
   executionId: "r7grdajtci7hf757zd9xr",
   executionUrl:
     "https://app.keeperhub.com/executions/r7grdajtci7hf757zd9xr",
+  /**
+   * Guest-open KeeperHub page. `/executions/:id` 404s without a session
+   * ("No content found"). The workflow is public and 200.
+   */
+  keeperhubOpenUrl:
+    "https://app.keeperhub.com/workflows/mcwzez7idnh81xj8dofz1",
   txHash:
     "0x28a94c68511a06e77f5e0c516e893335b6c18f17caead4de3a29421072c6cc04",
   txUrl:

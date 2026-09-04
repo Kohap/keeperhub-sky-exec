@@ -1,6 +1,9 @@
 import { useEffect } from "react";
+import { Link } from "@tanstack/react-router";
 import type { ErrorComponentProps } from "@tanstack/react-router";
 import { TriangleAlert } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const RELOAD_KEY = "sky-exec-chunk-reload";
 const CHUNK_RE =
@@ -37,6 +40,26 @@ export function AppErrorComponent({ error }: ErrorComponentProps) {
       >
         Reload
       </button>
+    </main>
+  );
+}
+
+export function AppNotFound() {
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-center gap-3 bg-bg px-6 text-center text-fg">
+      <h1 className="font-display text-2xl tracking-display">
+        Nothing at this path
+      </h1>
+      <p className="max-w-md text-sm text-muted">
+        Desk, FAQ, and Social are the live pages. The recorded hash is on the
+        home ticket.
+      </p>
+      <Link
+        to="/desk"
+        className={cn(buttonVariants({ variant: "primary" }), "mt-2")}
+      >
+        <span className="relative z-10">Open the desk</span>
+      </Link>
     </main>
   );
 }

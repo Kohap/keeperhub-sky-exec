@@ -151,7 +151,7 @@ function ExecuteStub() {
         <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
           <CopyHash value={PROVEN_RUN.txHash} />
           <a
-            href={PROVEN_RUN.executionUrl}
+            href={PROVEN_RUN.keeperhubOpenUrl}
             target="_blank"
             rel="noreferrer"
             className="inline-flex min-h-8 items-center gap-1 text-sm text-muted hover:text-accent"

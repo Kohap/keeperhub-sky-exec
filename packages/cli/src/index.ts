@@ -117,7 +117,7 @@ async function main() {
   if (!argFlag("--execute")) {
     await audit.append(stamp({ intent, policy, dryRun: dry, mode }));
     console.log("\nPass --execute to run through KeeperHub (requires kh_ key).");
-    console.log(`Proven run: ${PROVEN_RUN.executionUrl}`);
+    console.log(`Proven run: ${PROVEN_RUN.keeperhubOpenUrl}`);
     console.log(`Proven tx:  ${PROVEN_RUN.txUrl}`);
     return;
   }

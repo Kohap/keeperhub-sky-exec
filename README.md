@@ -18,7 +18,7 @@ This repo is the **agent + policy + dry-run + audit glue**. Sky Protocol is the 
 | Network | **Ethereum mainnet** (Sky plugin has no testnet). Gas was KeeperHub-sponsored. Amount was **0 USDS approve** so no savings moved. |
 | Workflow | `mcwzez7idnh81xj8dofz1` · [open](https://app.keeperhub.com/workflows/mcwzez7idnh81xj8dofz1) |
 | Deposit workflow (composed, not funded) | `nmm3kwxaj90uocmrm9m5y` · [open](https://app.keeperhub.com/workflows/nmm3kwxaj90uocmrm9m5y) |
-| KeeperHub run | `r7grdajtci7hf757zd9xr` · [open](https://app.keeperhub.com/executions/r7grdajtci7hf757zd9xr) |
+| KeeperHub run | `r7grdajtci7hf757zd9xr` · workflow [open](https://app.keeperhub.com/workflows/mcwzez7idnh81xj8dofz1) (the `/executions/:id` page 404s for guests) |
 | Tx hash | `0x28a94c68511a06e77f5e0c516e893335b6c18f17caead4de3a29421072c6cc04` · [Etherscan](https://etherscan.io/tx/0x28a94c68511a06e77f5e0c516e893335b6c18f17caead4de3a29421072c6cc04) |
 | Block | 25903693 |
 | Action | `sky/approve-usds` spender = sUSDS vault `0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD`, amount `0` |

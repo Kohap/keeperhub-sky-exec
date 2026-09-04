@@ -113,7 +113,7 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
-              <a href={PROVEN_RUN.executionUrl} target="_blank" rel="noreferrer" className={footLink}>
+              <a href={PROVEN_RUN.keeperhubOpenUrl} target="_blank" rel="noreferrer" className={footLink}>
                 Recorded run
               </a>
             </li>
