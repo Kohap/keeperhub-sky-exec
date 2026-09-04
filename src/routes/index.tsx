@@ -161,16 +161,16 @@ function Home() {
   }, [last]);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-4 py-8 sm:px-6 sm:py-10">
-      <header className="flex flex-col gap-5 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
+    <main className="rise-in mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-4 py-8 sm:gap-8 sm:px-6 sm:py-10">
+      <header className="flex flex-col gap-5 pb-2 sm:flex-row sm:items-end sm:justify-between">
         <div className="max-w-xl">
-          <p className="font-mono text-xs tracking-[0.18em] text-accent uppercase">
+          <p className="font-mono text-2xs tracking-kicker text-accent uppercase">
             KeeperHub · Sky Protocol
           </p>
-          <h1 className="mt-2 font-display text-4xl leading-none tracking-[-0.03em] text-fg sm:text-5xl">
+          <h1 className="mt-2 font-display text-3xl leading-tight tracking-display text-fg">
             Sky Exec
           </h1>
-          <p className="mt-3 max-w-prose text-sm leading-relaxed text-muted">
+          <p className="mt-3 max-w-prose text-sm leading-normal text-muted">
             Recorded action: Sky approve 0 USDS for the sUSDS vault on Ethereum
             via KeeperHub. Not a completed deposit. You review it, dry-run with
             no chain write, then that exact workflow executes.
@@ -198,7 +198,7 @@ function Home() {
       {fixtureBanner ? (
         <div
           role="status"
-          className="rounded-xl border border-accent/30 bg-surface-2 px-4 py-3 text-sm leading-relaxed text-fg"
+          className="rounded-lg bg-surface-2 px-4 py-3 text-sm leading-normal text-fg shadow-border"
         >
           Fixture mode. Empty key — hashes here are the recorded KeeperHub
           execute, not a new broadcast.
@@ -207,13 +207,18 @@ function Home() {
 
       <ProvenRun />
 
-      <section className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
-        <div className="rounded-xl border border-border bg-surface p-4 sm:p-6">
+      <section className="grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+        <div className="rounded-xl bg-surface p-4 shadow-border">
           <div className="mb-4 flex items-center justify-between gap-3">
             <h2 className="text-sm font-medium tracking-wide uppercase">
               Compose
             </h2>
-            <label className="flex min-h-11 items-center gap-2 font-mono text-[11px] text-muted">
+            <label
+              className={cn(
+                "flex min-h-11 items-center gap-2 rounded-md px-2 font-mono text-2xs",
+                killSwitch ? "bg-danger/10 text-danger" : "text-muted",
+              )}
+            >
               <input
                 type="checkbox"
                 checked={killSwitch}
@@ -227,7 +232,7 @@ function Home() {
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             rows={3}
-            className="w-full resize-y rounded-md border border-border bg-bg px-3 py-3 font-mono text-sm text-fg outline-none ring-ring focus:ring-2"
+            className="w-full resize-y rounded-md bg-bg px-3 py-3 font-mono text-sm text-fg shadow-border outline-none ring-ring focus:ring-2"
             aria-label="Workflow prompt"
           />
           <div className="mt-3 flex flex-wrap gap-2">
@@ -249,7 +254,7 @@ function Home() {
             </Button>
           </div>
           <div className="mt-4">
-            <span className="mb-1 block font-mono text-[11px] tracking-wide text-muted uppercase">
+            <span className="mb-1 block font-mono text-2xs tracking-wide text-muted uppercase">
               KeeperHub org key (optional)
             </span>
             <div className="flex flex-col gap-2 sm:flex-row">
@@ -268,7 +273,7 @@ function Home() {
                     /* ignore */
                   }
                 }}
-                className="h-11 w-full rounded-md border border-border bg-bg px-3 font-mono text-sm text-fg outline-none ring-ring focus:ring-2"
+                className="h-11 w-full rounded-md bg-bg px-3 font-mono text-sm text-fg shadow-border outline-none ring-ring focus:ring-2"
               />
               <Button
                 type="button"
@@ -321,20 +326,20 @@ function Home() {
               Execute
             </Button>
           </div>
-          <p className="mt-3 text-xs leading-relaxed text-muted">
+          <p className="mt-3 text-xs leading-normal text-muted">
             Confirm Execute: this calls KeeperHub{" "}
             <span className="font-mono">execute_workflow</span> on the composed
             Sky approve. Dry-run first. Fixture replays the recorded hash — it
             is not a new broadcast.
           </p>
           {last?.error === "policy_reject" && last.policy.allow === false ? (
-            <p className="mt-4 flex items-start gap-2 rounded-md border border-danger/30 bg-danger/10 px-3 py-2 text-sm text-fg">
+            <p className="mt-4 flex items-start gap-2 rounded-md bg-danger/10 px-3 py-2 text-sm text-fg shadow-border">
               <Skull className="mt-0.5 size-4 shrink-0 text-danger" />
               {last.policy.reason}
             </p>
           ) : null}
           {last?.error === "dry_run_fail" ? (
-            <p className="mt-4 flex items-start gap-2 rounded-md border border-danger/30 bg-danger/10 px-3 py-2 text-sm text-fg">
+            <p className="mt-4 flex items-start gap-2 rounded-md bg-danger/10 px-3 py-2 text-sm text-fg shadow-border">
               <CircleAlert className="mt-0.5 size-4 shrink-0 text-danger" />
               {last.dryRun?.error ?? "Dry-run failed. Execute skipped."}
             </p>
@@ -345,16 +350,16 @@ function Home() {
           {steps.map((s, i) => (
             <li
               key={s.id}
-              className="rounded-lg border border-border bg-surface px-4 py-4"
+              className="rounded-lg bg-surface px-4 py-4 shadow-border"
             >
               <div className="flex items-baseline justify-between gap-3">
-                <p className="font-mono text-[11px] text-subtle">
+                <p className="font-mono text-2xs tabular-nums text-subtle">
                   {String(i + 1).padStart(2, "0")}
                 </p>
                 <StepMark state={s.state} />
               </div>
               <p className="mt-1 text-base font-medium">{s.label}</p>
-              <p className="mt-1 break-words font-mono text-xs leading-relaxed text-muted">
+              <p className="mt-1 break-words font-mono text-xs leading-normal text-muted">
                 {s.hint}
               </p>
             </li>
@@ -363,14 +368,24 @@ function Home() {
       </section>
 
       {last?.run ? (
-        <section className="rounded-xl border border-border bg-surface p-4 sm:p-6">
+        <section className="rounded-xl bg-surface p-4 shadow-border">
           <h2 className="text-sm font-medium tracking-wide uppercase">
             {last.mode === "fixture" ? "Last run · recorded" : "Last run"}
           </h2>
           {last.mode === "fixture" ? (
-            <p className="mt-2 text-sm text-muted">
+            <p className="mt-2 text-sm leading-normal text-muted">
               Recorded KeeperHub hash. Not a new broadcast.
             </p>
+          ) : null}
+          {last.run.txHash ? (
+            <a
+              href={last.run.txLink}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-4 block break-all font-mono text-lg leading-snug text-fg tabular-nums hover:text-accent sm:text-xl"
+            >
+              {last.run.txHash}
+            </a>
           ) : null}
           <dl className="mt-4 grid gap-3 sm:grid-cols-2">
             <Fact
@@ -395,23 +410,23 @@ function Home() {
         </section>
       ) : null}
 
-      <section className="rounded-xl border border-border bg-surface p-4 sm:p-6">
+      <section className="rounded-xl bg-surface p-4 shadow-border">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-sm font-medium tracking-wide uppercase">
             Audit trail
           </h2>
-          <span className="font-mono text-[11px] text-subtle">
+          <span className="font-mono text-2xs tabular-nums text-subtle">
             {audit.length} rows · local
           </span>
         </div>
         {audit.length === 0 ? (
-          <p className="text-sm text-muted">
+          <p className="text-sm leading-normal text-muted">
             Empty. Run a policy check, dry-run, or execute.
           </p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[640px] text-left text-sm">
-              <thead className="font-mono text-[11px] tracking-wide text-subtle uppercase">
+            <table className="w-full min-w-xl text-left text-sm">
+              <thead className="font-mono text-2xs tracking-wide text-subtle uppercase">
                 <tr className="border-b border-border">
                   <th className="py-2 pr-3 font-medium">Time</th>
                   <th className="py-2 pr-3 font-medium">Intent</th>
@@ -426,7 +441,7 @@ function Home() {
                     key={`${row.timestamp}-${i}`}
                     className="border-b border-border/70"
                   >
-                    <td className="py-2 pr-3 whitespace-nowrap font-mono text-xs text-muted">
+                    <td className="py-2 pr-3 whitespace-nowrap font-mono text-xs tabular-nums text-muted">
                       {row.timestamp.slice(11, 19)}
                     </td>
                     <td className="py-2 pr-3 font-mono text-xs">
@@ -442,13 +457,13 @@ function Home() {
                         </span>
                       )}
                     </td>
-                    <td className="py-2 pr-3 font-mono text-xs">
+                    <td className="py-2 pr-3 font-mono text-xs tabular-nums">
                       {row.runId ? shortHash(row.runId, 4) : "—"}
                       {row.mode === "fixture" && row.runId ? (
                         <span className="ml-2 text-subtle">recorded</span>
                       ) : null}
                     </td>
-                    <td className="py-2 font-mono text-xs">
+                    <td className="py-2 font-mono text-xs tabular-nums">
                       {row.txHash ? (
                         <span className="inline-flex flex-wrap items-center gap-1">
                           <a
@@ -484,7 +499,7 @@ function Home() {
           {skyActions.slice(0, 12).map((a) => (
             <li
               key={a.actionType}
-              className="rounded-md border border-border bg-surface px-3 py-3"
+              className="rounded-md bg-surface px-3 py-3 shadow-border"
             >
               <p className="font-mono text-xs text-accent">{a.actionType}</p>
               <p className="mt-1 text-sm">{a.label}</p>
@@ -498,17 +513,25 @@ function Home() {
 
 function ProvenRun() {
   return (
-    <aside className="rounded-xl border border-accent/30 bg-surface-2 p-4 sm:p-5">
-      <p className="font-mono text-[11px] tracking-[0.16em] text-accent uppercase">
+    <aside className="rounded-xl bg-surface-2 p-4 shadow-border sm:p-5">
+      <p className="font-mono text-2xs tracking-kicker text-accent uppercase">
         Recorded KeeperHub execute
       </p>
-      <p className="mt-2 text-sm text-muted">
+      <a
+        href={PROVEN_RUN.txUrl}
+        target="_blank"
+        rel="noreferrer"
+        className="mt-3 block break-all font-mono text-lg leading-snug text-fg tabular-nums hover:text-accent sm:text-xl"
+      >
+        {PROVEN_RUN.txHash}
+      </a>
+      <p className="mt-2 text-sm leading-normal text-muted">
         Sky approve 0 USDS for sUSDS vault · {PROVEN_RUN.network}. Gas
         sponsored. Not a deposit. Not a mock.
       </p>
-      <div className="mt-3 flex flex-col gap-2 font-mono text-xs sm:flex-row sm:flex-wrap sm:gap-x-6">
+      <div className="mt-3 flex flex-col gap-1 font-mono text-xs sm:flex-row sm:flex-wrap sm:gap-x-6">
         <a
-          className="inline-flex min-h-11 items-center gap-1 text-fg hover:text-accent"
+          className="inline-flex min-h-11 items-center gap-1 text-muted hover:text-accent"
           href={PROVEN_RUN.executionUrl}
           target="_blank"
           rel="noreferrer"
@@ -517,16 +540,16 @@ function ProvenRun() {
           <ArrowUpRight className="size-3" />
         </a>
         <a
-          className="inline-flex min-h-11 items-center gap-1 text-fg hover:text-accent"
+          className="inline-flex min-h-11 items-center gap-1 text-muted hover:text-accent"
           href={PROVEN_RUN.txUrl}
           target="_blank"
           rel="noreferrer"
         >
-          {shortHash(PROVEN_RUN.txHash, 8)}
+          Etherscan
           <ArrowUpRight className="size-3" />
         </a>
         <a
-          className="inline-flex min-h-11 items-center gap-1 text-fg hover:text-accent"
+          className="inline-flex min-h-11 items-center gap-1 text-muted hover:text-accent"
           href={PROVEN_RUN.approveWorkflowUrl}
           target="_blank"
           rel="noreferrer"
@@ -551,11 +574,13 @@ function Fact({
   recorded?: boolean;
 }) {
   const inner = (
-    <span className="break-all font-mono text-xs text-fg">{value}</span>
+    <span className="break-all font-mono text-xs tabular-nums text-fg">
+      {value}
+    </span>
   );
   return (
     <div>
-      <dt className="font-mono text-[11px] tracking-wide text-subtle uppercase">
+      <dt className="font-mono text-2xs tracking-wide text-subtle uppercase">
         {label}
         {recorded ? " · recorded" : ""}
       </dt>
@@ -582,8 +607,8 @@ function StatusChip({ ok, label }: { ok: boolean; label: string }) {
   return (
     <span
       className={cn(
-        "inline-flex h-8 items-center rounded-full border px-3 font-mono text-[11px]",
-        ok ? "border-ok/30 text-ok" : "border-border text-muted",
+        "inline-flex h-8 items-center rounded-full px-3 font-mono text-2xs shadow-border",
+        ok ? "text-ok" : "text-muted",
       )}
     >
       {label}
