@@ -5,8 +5,7 @@ import {
   PROVEN_RUN,
   RECORDED_DRY_RUN,
 } from "../../packages/keeperhub/src/proof.ts";
-import { SiteFooter, SiteNav } from "@/components/site-shell";
-import { SvStage } from "@/components/sv-stage";
+import { SiteFooter, SiteFrame, SiteNav } from "@/components/site-shell";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -54,60 +53,41 @@ const MCP = [
 
 function Landing() {
   return (
-    <main className="overflow-x-clip">
-      <section className="relative overflow-hidden">
-        <SvStage>
-          <div className="sv-orbit">
-            <img
-              src="/visuals/sv31.jpg"
-              alt=""
-              className="sv-plane h-full w-full object-cover object-right"
-            />
-            <img
-              src="/visuals/sv47.jpg"
-              alt=""
-              className="sv-card"
-            />
-          </div>
-          <div className="sv-veil bg-gradient-to-r from-bg via-bg/90 to-bg/55 sm:via-bg/80 sm:to-bg/20" />
-        </SvStage>
-        <div className="relative z-10 mx-auto flex max-w-5xl flex-col px-4 py-3 sm:px-6 sm:py-4">
-          <SiteNav />
+    <SiteFrame cube>
+      <div className="mx-auto flex max-w-5xl flex-col px-4 py-3 sm:px-6 sm:py-4">
+        <SiteNav />
 
-          <div className="flex flex-col gap-5 py-8 sm:gap-6 sm:py-10">
-            <ExecuteStub />
-            <div className="max-w-xl">
-              <h1 className="font-display text-2xl leading-tight tracking-display sm:text-3xl">
-                The recorded Sky approve on KeeperHub.
-              </h1>
-              <p className="mt-2 text-sm leading-normal text-muted sm:text-base">
-                A Claude/MCP agent composes a Sky sUSDS workflow. You gate it,
-                dry-run with no chain write, then that exact graph executes.
-              </p>
-              <div className="mt-4">
-                <Link
-                  to="/desk"
-                  className={cn(buttonVariants({ variant: "primary" }))}
-                >
-                  <span className="relative z-10">Open the desk</span>
-                </Link>
-              </div>
+        <div className="flex flex-col gap-5 py-8 sm:gap-6 sm:py-10">
+          <ExecuteStub />
+          <div className="max-w-xl">
+            <h1 className="font-display text-2xl leading-tight tracking-display sm:text-3xl">
+              The recorded Sky approve on KeeperHub.
+            </h1>
+            <p className="mt-2 text-sm leading-normal text-muted sm:text-base">
+              A Claude/MCP agent composes a Sky sUSDS workflow. You gate it,
+              dry-run with no chain write, then that exact graph executes.
+            </p>
+            <div className="mt-4">
+              <Link
+                to="/desk"
+                className={cn(buttonVariants({ variant: "primary" }))}
+              >
+                <span className="relative z-10">Open the desk</span>
+              </Link>
             </div>
-            <dl className="grid max-w-3xl grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4 sm:gap-x-6">
-              {FACTS.map((f) => (
-                <div key={f.k} className="min-w-0">
-                  <dt className="text-xs text-subtle">{f.k}</dt>
-                  <dd className="mt-0.5 break-all font-mono text-sm tabular-nums">
-                    {f.v}
-                  </dd>
-                </div>
-              ))}
-            </dl>
           </div>
+          <dl className="grid max-w-3xl grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4 sm:gap-x-6">
+            {FACTS.map((f) => (
+              <div key={f.k} className="min-w-0">
+                <dt className="text-xs text-subtle">{f.k}</dt>
+                <dd className="mt-0.5 break-all font-mono text-sm tabular-nums">
+                  {f.v}
+                </dd>
+              </div>
+            ))}
+          </dl>
         </div>
-      </section>
 
-      <section className="mx-auto max-w-5xl px-4 pb-16 sm:px-6">
         <ol>
           {STEPS.map((s) => (
             <li
@@ -144,8 +124,8 @@ function Landing() {
         </p>
 
         <SiteFooter />
-      </section>
-    </main>
+      </div>
+    </SiteFrame>
   );
 }
 

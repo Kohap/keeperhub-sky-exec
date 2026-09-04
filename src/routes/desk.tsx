@@ -16,7 +16,7 @@ import {
   ALLOWED_ASSETS,
   loadLimitsFromEnv,
 } from "../../packages/policy/src/index.ts";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { SiteNav } from "@/components/site-shell";
 import { SvStage } from "@/components/sv-stage";
 import { cn, shortHash } from "@/lib/utils";
@@ -328,12 +328,6 @@ function Home() {
             via KeeperHub. Not a completed deposit. You review it, dry-run with
             no chain write, then that exact workflow executes.
           </p>
-          <a
-            href="#compose"
-            className={cn(buttonVariants({ variant: "primary" }), "mt-4")}
-          >
-            <span className="relative z-10">Open the desk</span>
-          </a>
         </div>
         <div className="flex flex-wrap gap-1.5">
           <StatusChip

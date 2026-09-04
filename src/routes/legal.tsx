@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SiteFooter, SiteNav, PageHero } from "@/components/site-shell";
+import { SiteFooter, SiteFrame, SiteNav, PageHero } from "@/components/site-shell";
 
 export const Route = createFileRoute("/legal")({ component: LegalPage });
 
 function LegalPage() {
   return (
-    <main className="mx-auto min-h-dvh max-w-5xl px-4 py-3 sm:px-6 sm:py-4">
+    <SiteFrame>
+    <div className="mx-auto min-h-dvh max-w-5xl px-4 py-3 sm:px-6 sm:py-4">
       <SiteNav />
       <PageHero title="Legal">
         <p className="mt-2 max-w-xl text-sm text-muted">
@@ -28,8 +29,8 @@ function LegalPage() {
             on the landing belong to Ameer Talha. Gift claims none of those.
           </p>
         </section>
-        <section>
-          <h2 className="text-base font-medium text-fg">This is a demo</h2>
+        <section id="terms" className="scroll-mt-8">
+          <h2 className="text-base font-medium text-fg">Terms</h2>
           <p className="mt-2">
             DoraHacks, KeeperHub, The Agent Economy. Fixture mode replays a
             recorded execute. Do not treat this app as a custodian, broker, or
@@ -37,8 +38,7 @@ function LegalPage() {
             repo.
           </p>
         </section>
-        <section>
-          <h2 className="text-base font-medium text-fg">Privacy</h2>
+        <section id="privacy" className="scroll-mt-8">
           <p className="mt-2">
             The desk may keep a KeeperHub org key in this browser session
             (sky-exec-kh-key). Clear key wipes it. No analytics vendor. No
@@ -47,6 +47,7 @@ function LegalPage() {
         </section>
       </div>
       <SiteFooter />
-    </main>
+    </div>
+    </SiteFrame>
   );
 }

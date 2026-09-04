@@ -228,13 +228,31 @@
     inset: 0;
     pointer-events: none;
   }
+  .sv-foot {
+    position: absolute;
+    right: -8%;
+    bottom: -6%;
+    height: min(42rem, 70vh);
+    width: min(56rem, 90vw);
+    object-fit: cover;
+    object-position: right bottom;
+    mix-blend-mode: screen;
+    opacity: 0.85;
+    pointer-events: none;
+  }
   @media (max-width: 639px) {
     .sv-card {
       display: none;
     }
     .sv-plane {
-      opacity: 0.28;
+      opacity: 0.42;
       mix-blend-mode: normal;
+    }
+    .sv-foot {
+      mix-blend-mode: normal;
+      opacity: 0.45;
+      right: -20%;
+      height: 22rem;
     }
   }
 }

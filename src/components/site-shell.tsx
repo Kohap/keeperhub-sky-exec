@@ -1,8 +1,11 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
+import { Github } from "lucide-react";
 import { PROVEN_RUN } from "../../packages/keeperhub/src/proof.ts";
+import { SvStage } from "@/components/sv-stage";
 
 const navLink = "inline-flex min-h-8 items-center text-muted hover:text-accent";
+const footLink = "inline-flex min-h-8 items-center text-sm text-fg/90 hover:text-accent";
 
 export function SiteNav() {
   return (
@@ -31,6 +34,39 @@ export function SiteNav() {
         </Link>
       </div>
     </nav>
+  );
+}
+
+export function SiteFrame({
+  children,
+  cube = false,
+}: {
+  children: ReactNode;
+  cube?: boolean;
+}) {
+  return (
+    <div className="relative min-h-dvh overflow-x-clip">
+      <SvStage>
+        <div className="sv-orbit">
+          <img
+            src="/visuals/sv31.jpg"
+            alt=""
+            className="sv-plane h-full w-full object-cover object-[80%_bottom]"
+          />
+          {cube ? (
+            <img src="/visuals/sv47.jpg" alt="" className="sv-card" />
+          ) : null}
+          <img
+            src="/visuals/sv31.jpg"
+            alt=""
+            className="sv-foot"
+          />
+        </div>
+        <div className="sv-veil bg-gradient-to-r from-bg via-bg/82 to-bg/20 sm:via-bg/70 sm:to-transparent" />
+        <div className="sv-veil bg-gradient-to-t from-bg/30 via-transparent to-transparent" />
+      </SvStage>
+      <div className="relative z-10">{children}</div>
+    </div>
   );
 }
 
@@ -70,36 +106,111 @@ export function PageHero({
 
 export function SiteFooter() {
   return (
-    <footer className="mt-16 border-t border-border pt-6 text-sm text-muted">
-      <p>© 2026 Gift. All rights reserved.</p>
-      <p className="mt-1 max-w-xl text-xs leading-snug text-subtle">
-        Sky Exec is Gift's agent, policy, dry-run, and audit glue. Sky
-        Protocol, USDS, sUSDS, and KeeperHub remain their owners. Not a mock
-        protocol.
-      </p>
-      <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
-        <Link
-          to="/legal"
-          className="inline-flex min-h-8 items-center hover:text-accent"
-        >
-          Legal
-        </Link>
-        <a
-          href="https://github.com/Kohap/keeperhub-sky-exec"
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex min-h-8 items-center hover:text-accent"
-        >
-          GitHub
-        </a>
-        <a
-          href={PROVEN_RUN.executionUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex min-h-8 items-center hover:text-accent"
-        >
-          KeeperHub run
-        </a>
+    <footer className="mt-20 text-sm text-muted">
+      <div className="grid gap-10 border-t border-border/80 pt-12 sm:grid-cols-2 lg:grid-cols-4">
+        <div>
+          <p className="text-xs text-subtle">Product</p>
+          <ul className="mt-4 flex flex-col">
+            <li>
+              <Link to="/desk" className={footLink}>
+                Desk
+              </Link>
+            </li>
+            <li>
+              <Link to="/faq" className={footLink}>
+                FAQ
+              </Link>
+            </li>
+            <li>
+              <a href={PROVEN_RUN.executionUrl} target="_blank" rel="noreferrer" className={footLink}>
+                Recorded run
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <p className="text-xs text-subtle">Developers</p>
+          <ul className="mt-4 flex flex-col">
+            <li>
+              <a
+                href="https://github.com/Kohap/keeperhub-sky-exec"
+                target="_blank"
+                rel="noreferrer"
+                className={footLink}
+              >
+                GitHub
+              </a>
+            </li>
+            <li>
+              <a href={PROVEN_RUN.txUrl} target="_blank" rel="noreferrer" className={footLink}>
+                Etherscan
+              </a>
+            </li>
+            <li>
+              <a
+                href={PROVEN_RUN.approveWorkflowUrl}
+                target="_blank"
+                rel="noreferrer"
+                className={footLink}
+              >
+                Workflow
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <p className="text-xs text-subtle">Legal</p>
+          <ul className="mt-4 flex flex-col">
+            <li>
+              <Link to="/legal" className={footLink}>
+                Legal
+              </Link>
+            </li>
+            <li>
+              <Link to="/legal" hash="privacy" className={footLink}>
+                Privacy
+              </Link>
+            </li>
+            <li>
+              <Link to="/legal" hash="terms" className={footLink}>
+                Terms
+              </Link>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <p className="text-xs text-subtle">Trust and Social</p>
+          <div className="mt-4 flex items-center gap-4">
+            <a
+              href="https://github.com/Kohap/keeperhub-sky-exec"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex size-8 items-center justify-center text-fg/90 hover:text-accent"
+              aria-label="GitHub"
+            >
+              <Github className="size-4" />
+            </a>
+            <Link to="/social" className={footLink}>
+              Social
+            </Link>
+          </div>
+          <p className="mt-3 max-w-xs text-xs leading-snug text-subtle">
+            The code is open source. Auditing questions and KeeperHub
+            integration notes are on GitHub.
+          </p>
+        </div>
+      </div>
+      <div className="mt-12 border-t border-border/80 py-6 text-center">
+        <p>© 2026 Gift</p>
+        <div className="mt-3 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs">
+          <a href={PROVEN_RUN.txUrl} target="_blank" rel="noreferrer" className="hover:text-accent">
+            View transaction
+          </a>
+          <Link to="/desk" className="hover:text-accent">
+            Desk
+          </Link>
+          <span>Ethereum mainnet</span>
+        </div>
       </div>
     </footer>
   );

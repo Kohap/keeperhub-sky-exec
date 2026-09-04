@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SiteFooter, SiteNav, PageHero } from "@/components/site-shell";
+import { SiteFooter, SiteFrame, SiteNav, PageHero } from "@/components/site-shell";
 
 export const Route = createFileRoute("/social")({ component: SocialPage });
 
@@ -32,7 +32,8 @@ const LINKS = [
 
 function SocialPage() {
   return (
-    <main className="mx-auto min-h-dvh max-w-5xl px-4 py-3 sm:px-6 sm:py-4">
+    <SiteFrame>
+    <div className="mx-auto min-h-dvh max-w-5xl px-4 py-3 sm:px-6 sm:py-4">
       <SiteNav />
       <PageHero title="Social">
         <p className="mt-2 max-w-xl text-sm text-muted">
@@ -56,6 +57,7 @@ function SocialPage() {
         ))}
       </ul>
       <SiteFooter />
-    </main>
+    </div>
+    </SiteFrame>
   );
 }
