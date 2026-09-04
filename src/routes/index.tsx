@@ -56,17 +56,17 @@ function Landing() {
   return (
     <main className="overflow-x-clip">
       <section className="relative overflow-hidden">
-        <SvStage strength={12}>
+        <SvStage>
           <div className="sv-orbit">
             <img
               src="/visuals/sv31.jpg"
               alt=""
-              className="sv-plane sv-drift h-full w-full object-cover object-right"
+              className="sv-plane h-full w-full object-cover object-right"
             />
             <img
               src="/visuals/sv47.jpg"
               alt=""
-              className="sv-card sv-float"
+              className="sv-card"
             />
           </div>
           <div className="sv-veil bg-gradient-to-r from-bg via-bg/90 to-bg/55 sm:via-bg/80 sm:to-bg/20" />

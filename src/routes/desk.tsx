@@ -288,12 +288,12 @@ function Home() {
 
   return (
     <div className="relative min-h-screen overflow-x-clip">
-      <SvStage strength={6}>
+      <SvStage>
         <div className="sv-orbit">
           <img
             src="/visuals/sv31.jpg"
             alt=""
-            className="sv-plane sv-drift h-full w-full object-cover object-[80%_center] opacity-50 mix-blend-screen"
+            className="sv-plane h-full w-full object-cover object-[80%_center] opacity-50 mix-blend-screen"
           />
         </div>
         <div className="sv-veil bg-[radial-gradient(48rem_24rem_at_100%_0%,color-mix(in_oklab,var(--color-accent)_22%,transparent),transparent_62%)]" />

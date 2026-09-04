@@ -205,68 +205,32 @@
   }
 
   .sv-stage {
-    perspective: 72rem;
-    perspective-origin: 70% 40%;
-    transform-style: preserve-3d;
-    --sv-rx: 0deg;
-    --sv-ry: 0deg;
     z-index: 0;
     isolation: isolate;
   }
   .sv-orbit {
     position: absolute;
     inset: 0;
-    transform-style: preserve-3d;
-    transform: rotateX(var(--sv-rx)) rotateY(var(--sv-ry));
-    transition: transform var(--motion-fast) var(--ease-out);
   }
   .sv-plane {
     position: absolute;
     inset: 0;
-    transform: translateZ(-48px) scale(1.06);
-    backface-visibility: hidden;
   }
   .sv-card {
     position: absolute;
     top: 8%;
     right: -4rem;
     width: min(70vw, 36rem);
-    transform-origin: 50% 50%;
-    transform: translateZ(56px);
-    backface-visibility: hidden;
     mix-blend-mode: screen;
-  }
-  .sv-float {
-    animation: sv-float 16s var(--ease-in-out-cubic) infinite;
-    will-change: transform;
-  }
-  .sv-drift {
-    animation: sv-drift 28s var(--ease-in-out-cubic) infinite;
-    will-change: transform;
   }
   .sv-veil {
     position: absolute;
     inset: 0;
-    transform: translateZ(8px);
     pointer-events: none;
   }
   @media (max-width: 639px) {
-    .sv-stage,
-    .sv-orbit {
-      perspective: none;
-      transform: none;
-      transform-style: flat;
-    }
     .sv-card {
       display: none;
-    }
-    .sv-float,
-    .sv-drift {
-      animation: none;
-    }
-    .sv-plane,
-    .sv-veil {
-      transform: none;
     }
     .sv-plane {
       opacity: 0.28;
@@ -303,26 +267,6 @@
   }
   to {
     background-position: -20% 0;
-  }
-}
-
-@keyframes sv-float {
-  0%,
-  100% {
-    transform: translateZ(48px) translateY(0) rotateZ(-2deg);
-  }
-  50% {
-    transform: translateZ(80px) translateY(-14px) rotateZ(3deg);
-  }
-}
-
-@keyframes sv-drift {
-  0%,
-  100% {
-    transform: translateZ(-48px) translate3d(0, 0, 0) scale(1.06);
-  }
-  50% {
-    transform: translateZ(-32px) translate3d(-2%, 1.5%, 0) scale(1.1);
   }
 }
 
