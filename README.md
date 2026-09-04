@@ -12,6 +12,7 @@ This repo is the **agent + policy + dry-run + audit glue**. Sky Protocol is the 
 | --- | --- |
 | Live project | **Sky (USDS / sUSDS)** |
 | GitHub | [Kohap/keeperhub-sky-exec](https://github.com/Kohap/keeperhub-sky-exec) |
+| Proof commit | [`588cf00`](https://github.com/Kohap/keeperhub-sky-exec/commit/588cf000a1659ce9b82219f9e6facfd33e9d2084) |
 | KeeperHub surfaces | MCP (`create_workflow`, `validate_workflow`, `execute_workflow`, `get_execution`, `list_action_schemas`, `search_protocol_actions`, `execute_protocol_action`), REST simulate (`POST /api/execute/contract-call` with `simulate: true`), audit trail, CLI |
 | Network | **Ethereum mainnet** (Sky plugin has no testnet). Gas was KeeperHub-sponsored. Amount was **0 USDS approve** so no savings moved. |
 | Workflow | `mcwzez7idnh81xj8dofz1` · [open](https://app.keeperhub.com/workflows/mcwzez7idnh81xj8dofz1) |
@@ -65,42 +66,9 @@ npm run compose -- "approve 0 USDS for the sUSDS vault" --execute
 
 ## GitHub (DoraHacks source link)
 
-DoraHacks needs a public source URL. This tree publishes to
-[`Kohap/keeperhub-sky-exec`](https://github.com/Kohap/keeperhub-sky-exec).
+Public source: [`Kohap/keeperhub-sky-exec`](https://github.com/Kohap/keeperhub-sky-exec)
 
-### Create the public repo
-
-The connected GitHub token can **push** to an existing repo. It cannot
-`POST /user/repos` (`administration=write` is not granted). Create the empty
-shell in the browser, then push this tree.
-
-1. Open [github.com/new](https://github.com/new?name=keeperhub-sky-exec&visibility=public).
-2. Owner: **Kohap**. Repository name: **`keeperhub-sky-exec`**.
-3. Visibility: **Public**.
-4. Do **not** add a README, `.gitignore`, or license (this tree already has them). Adding any of those creates a commit you would have to force-overwrite.
-5. Click **Create repository**.
-
-### Push this tree
-
-```bash
-git init
-git checkout -B main
-git config user.name "Kohap"
-git config user.email "126649243+Kohap@users.noreply.github.com"
-git add .
-git commit -m "Sky Exec: Sky sUSDS workflows on KeeperHub"
-git remote add origin https://github.com/Kohap/keeperhub-sky-exec.git
-git push -u origin main
-```
-
-Same steps as a script:
-
-```bash
-bash scripts/publish-github.sh
-```
-
-If create is still 403, the script prints the new-repo URL, waits until the
-empty repo exists, and you re-run it to push `main`.
+Proof commit: [`588cf000a1659ce9b82219f9e6facfd33e9d2084`](https://github.com/Kohap/keeperhub-sky-exec/commit/588cf000a1659ce9b82219f9e6facfd33e9d2084)
 
 Paste `https://github.com/Kohap/keeperhub-sky-exec` into the DoraHacks source field.
 
