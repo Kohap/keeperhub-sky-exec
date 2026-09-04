@@ -2,6 +2,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowUpRight, Check, Copy } from "lucide-react";
 import { useState } from "react";
 import { PROVEN_RUN } from "../../packages/keeperhub/src/proof.ts";
+import { SiteFooter, SiteNav } from "@/components/site-shell";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -50,30 +51,7 @@ function Landing() {
           <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/80 to-bg/20 sm:via-bg/70" />
         </div>
         <div className="relative z-10 mx-auto flex min-h-dvh max-w-5xl flex-col px-4 py-3 sm:px-6 sm:py-4">
-        <nav className="flex items-center justify-between gap-3 rounded-full bg-surface-2 px-4 py-2">
-          <p className="font-display text-base tracking-display">Sky Exec</p>
-          <div className="flex items-center gap-4 text-sm">
-            <Link to="/desk" className="text-muted hover:text-accent">
-              Desk
-            </Link>
-            <a
-              href="https://github.com/Kohap/keeperhub-sky-exec"
-              target="_blank"
-              rel="noreferrer"
-              className="text-muted hover:text-accent"
-            >
-              GitHub
-            </a>
-            <a
-              href={PROVEN_RUN.txUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="text-muted hover:text-accent"
-            >
-              Etherscan
-            </a>
-          </div>
-        </nav>
+        <SiteNav />
 
         <div className="flex flex-1 flex-col justify-center gap-4 py-4 sm:gap-5 sm:py-6">
           <ExecuteStub />
@@ -126,25 +104,7 @@ function Landing() {
           Execute, Last run recorded.
         </p>
 
-        <footer className="mt-16 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
-          <span>DoraHacks, KeeperHub, Ethereum mainnet</span>
-          <a
-            href="https://github.com/Kohap/keeperhub-sky-exec"
-            target="_blank"
-            rel="noreferrer"
-            className="hover:text-accent"
-          >
-            Source
-          </a>
-          <a
-            href={PROVEN_RUN.executionUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="hover:text-accent"
-          >
-            KeeperHub run
-          </a>
-        </footer>
+        <SiteFooter />
       </section>
     </main>
   );

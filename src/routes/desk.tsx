@@ -292,7 +292,14 @@ function Home() {
           <p className="font-mono text-2xs tracking-kicker text-accent uppercase">
             KeeperHub · Sky Protocol
           </p>
-          <h1 className="mt-1 font-display text-2xl leading-tight tracking-display text-fg">
+          <h1 className="mt-1 flex items-center gap-2 font-display text-2xl leading-tight tracking-display text-fg">
+            <img
+              src="/logo.png"
+              alt=""
+              width={28}
+              height={28}
+              className="size-7 rounded-md"
+            />
             <Link
               to="/"
               className="hover:text-accent focus-visible:text-accent"

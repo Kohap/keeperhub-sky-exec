@@ -11,6 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DeskRouteImport } from './routes/desk'
+import { Route as FaqRouteImport } from './routes/faq'
+import { Route as LegalRouteImport } from './routes/legal'
+import { Route as SocialRouteImport } from './routes/social'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +25,58 @@ const DeskRoute = DeskRouteImport.update({
   path: '/desk',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalRoute = LegalRouteImport.update({
+  id: '/legal',
+  path: '/legal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SocialRoute = SocialRouteImport.update({
+  id: '/social',
+  path: '/social',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/desk': typeof DeskRoute
+  '/faq': typeof FaqRoute
+  '/legal': typeof LegalRoute
+  '/social': typeof SocialRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/desk': typeof DeskRoute
+  '/faq': typeof FaqRoute
+  '/legal': typeof LegalRoute
+  '/social': typeof SocialRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/desk': typeof DeskRoute
+  '/faq': typeof FaqRoute
+  '/legal': typeof LegalRoute
+  '/social': typeof SocialRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/desk'
+  fullPaths: '/' | '/desk' | '/faq' | '/legal' | '/social'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/desk'
-  id: '__root__' | '/' | '/desk'
+  to: '/' | '/desk' | '/faq' | '/legal' | '/social'
+  id: '__root__' | '/' | '/desk' | '/faq' | '/legal' | '/social'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DeskRoute: typeof DeskRoute
+  FaqRoute: typeof FaqRoute
+  LegalRoute: typeof LegalRoute
+  SocialRoute: typeof SocialRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +95,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DeskRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal': {
+      id: '/legal'
+      path: '/legal'
+      fullPath: '/legal'
+      preLoaderRoute: typeof LegalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/social': {
+      id: '/social'
+      path: '/social'
+      fullPath: '/social'
+      preLoaderRoute: typeof SocialRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DeskRoute: DeskRoute,
+  FaqRoute: FaqRoute,
+  LegalRoute: LegalRoute,
+  SocialRoute: SocialRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
