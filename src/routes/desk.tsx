@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { SiteNav } from "@/components/site-shell";
 import { SvStage } from "@/components/sv-stage";
 import { cn, shortHash } from "@/lib/utils";
+import { parsePipelineInput } from "@/lib/pipeline-input";
 import {
   composeAndGate,
   dryRunPipeline,
@@ -148,6 +149,7 @@ function Home() {
   const [skyActions, setSkyActions] = useState<SkyAction[]>([]);
   const [skyError, setSkyError] = useState<string | null>(null);
   const [lastExecuteAtMs, setLastExecuteAtMs] = useState<number | undefined>();
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const lastRunRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
@@ -192,11 +194,27 @@ function Home() {
 
   async function run(
     kind: "compose" | "dry" | "exec",
-    fn: () => Promise<PipelineOutput>,
+    fn: (data: {
+      prompt: string;
+      apiKey?: string;
+      killSwitch?: boolean;
+      lastExecuteAtMs?: number;
+    }) => Promise<PipelineOutput>,
   ) {
+    const parsed = parsePipelineInput({
+      prompt,
+      apiKey,
+      killSwitch,
+      lastExecuteAtMs,
+    });
+    if (!parsed.ok) {
+      setFieldErrors(parsed.errors);
+      return;
+    }
+    setFieldErrors({});
     setBusy(kind);
     try {
-      const out = await fn();
+      const out = await fn(parsed.data);
       setLast(out);
       persistAudit(
         stamp({
@@ -229,7 +247,6 @@ function Home() {
 
   const policyBlocked =
     last?.policy.allow === false && last.intent.prompt === prompt;
-  const payload = { data: { prompt, apiKey, killSwitch, lastExecuteAtMs } };
   const hasLiveKey = apiKey.trim().startsWith("kh_");
   const fixtureBanner = !hasLiveKey || last?.mode === "fixture";
   const fixtureChip = last ? last.mode === "fixture" : !hasLiveKey;
@@ -395,10 +412,24 @@ function Home() {
           <textarea
             id="workflow-prompt"
             value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
+            maxLength={400}
+            aria-invalid={Boolean(fieldErrors.prompt)}
+            onChange={(e) => {
+              setPrompt(e.target.value);
+              if (fieldErrors.prompt) {
+                setFieldErrors((prev) => {
+                  const next = { ...prev };
+                  delete next.prompt;
+                  return next;
+                });
+              }
+            }}
             rows={2}
             className="w-full resize-y rounded-md bg-bg px-3 py-2 font-mono text-sm text-fg outline-none ring-1 ring-border ring-ring transition-[box-shadow] duration-(--motion-quick) ease-(--ease-out) focus:ring-2"
           />
+          {fieldErrors.prompt ? (
+            <p className="mt-1 text-xs text-danger">{fieldErrors.prompt}</p>
+          ) : null}
           <div className="mt-2 flex flex-wrap gap-1.5">
             <Button
               size="sm"
@@ -433,13 +464,24 @@ function Home() {
                 autoComplete="off"
                 placeholder="kh_…"
                 value={apiKey}
+                aria-invalid={Boolean(fieldErrors.apiKey)}
+                maxLength={200}
                 onChange={(e) => {
                   const v = e.target.value;
                   setApiKey(v);
                   try {
-                    sessionStorage.setItem(KEY_STORE, v);
+                    if (v === "" || v.startsWith("kh_")) {
+                      sessionStorage.setItem(KEY_STORE, v);
+                    }
                   } catch {
                     /* ignore */
+                  }
+                  if (fieldErrors.apiKey) {
+                    setFieldErrors((prev) => {
+                      const next = { ...prev };
+                      delete next.apiKey;
+                      return next;
+                    });
                   }
                 }}
                 className="h-11 w-full rounded-md bg-bg px-3 font-mono text-sm text-fg outline-none ring-1 ring-border ring-ring transition-[box-shadow] duration-(--motion-quick) ease-(--ease-out) focus:ring-2"
@@ -458,13 +500,18 @@ function Home() {
               Stays in this browser session. Empty = fixture mode, which replays
               the recorded live hash and will not invent a new one.
             </span>
+            {fieldErrors.apiKey ? (
+              <p className="mt-1 text-xs text-danger">{fieldErrors.apiKey}</p>
+            ) : null}
           </div>
           <div className="mt-3 flex flex-col gap-1.5 sm:flex-row">
             <Button
               className="flex-1"
               variant="ghost"
               disabled={busy !== null}
-              onClick={() => run("compose", () => composeAndGate(payload))}
+              onClick={() =>
+                run("compose", (data) => composeAndGate({ data }))
+              }
             >
               {busy === "compose" ? (
                 <LoaderCircle className="size-4 animate-spin" aria-hidden />
@@ -477,7 +524,9 @@ function Home() {
               className="flex-1"
               variant="ghost"
               disabled={busy !== null}
-              onClick={() => run("dry", () => dryRunPipeline(payload))}
+              onClick={() =>
+                run("dry", (data) => dryRunPipeline({ data }))
+              }
             >
               {busy === "dry" ? (
                 <LoaderCircle className="size-4 animate-spin" aria-hidden />
@@ -487,7 +536,9 @@ function Home() {
             <Button
               className="flex-1"
               disabled={busy !== null || policyBlocked}
-              onClick={() => run("exec", () => executePipeline(payload))}
+              onClick={() =>
+                run("exec", (data) => executePipeline({ data }))
+              }
             >
               {busy === "exec" ? (
                 <LoaderCircle className="size-4 animate-spin" aria-hidden />

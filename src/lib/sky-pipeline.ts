@@ -14,6 +14,7 @@ import {
   type KeeperHubRun,
 } from "../../packages/keeperhub/src/index.ts";
 import type { Intent, PolicyDecision } from "../../packages/policy/src/index.ts";
+import { parsePipelineInputOrThrow, sanitizePrompt } from "@/lib/pipeline-input";
 
 export type PipelineInput = {
   prompt: string;
@@ -51,7 +52,7 @@ export async function runPipeline(
   data: PipelineInput,
   stage: PipelineStage,
 ): Promise<PipelineOutput> {
-  const intent = composeIntent(data.prompt);
+  const intent = composeIntent(sanitizePrompt(data.prompt));
   const policy = assertAllowed(
     intent,
     loadLimitsFromEnv(process.env, {
@@ -117,19 +118,19 @@ export const listSkyActions = createServerFn({ method: "GET" }).handler(
 );
 
 export const composeAndGate = createServerFn({ method: "POST" })
-  .validator((data: PipelineInput) => data)
+  .validator((data: PipelineInput) => parsePipelineInputOrThrow(data))
   .handler(async ({ data }): Promise<PipelineOutput> => {
     return runPipeline(data, "compose");
   });
 
 export const dryRunPipeline = createServerFn({ method: "POST" })
-  .validator((data: PipelineInput) => data)
+  .validator((data: PipelineInput) => parsePipelineInputOrThrow(data))
   .handler(async ({ data }): Promise<PipelineOutput> => {
     return runPipeline(data, "dry");
   });
 
 export const executePipeline = createServerFn({ method: "POST" })
-  .validator((data: PipelineInput) => data)
+  .validator((data: PipelineInput) => parsePipelineInputOrThrow(data))
   .handler(async ({ data }): Promise<PipelineOutput> => {
     return runPipeline(data, "exec");
   });
