@@ -21,7 +21,9 @@ const FAQS = [
     a: "Cap 10 USDS, USDS and sUSDS only, Ethereum (chain 1), 30s cooldown, kill switch. A policy reject never hits chain. Deposit 100 USDS is the failure path.",
   },
   {
-    q: "How do I run the 90-second path?",
+    q: "Is the KeeperHub workflow page part of Sky?",
+    a: "No. Sky is the live USDS/sUSDS market on Ethereum (vault 0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD). KeeperHub is the execution layer. Workflow mcwzez7idnh81xj8dofz1 is our composed Sky approve graph inside KeeperHub. Guest /executions/:id 404s. The public proof is the Etherscan hash.",
+  },
     a: "Open the desk. Success path. Policy check. Dry-run. Execute. Last run recorded. Then Policy reject to see a kill without a write.",
   },
   {

@@ -150,18 +150,14 @@ function ExecuteStub() {
         </a>
         <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
           <CopyHash value={PROVEN_RUN.txHash} />
-          <a
-            href={PROVEN_RUN.keeperhubOpenUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex min-h-8 items-center gap-1 text-sm text-muted hover:text-accent"
-          >
+          <span className="font-mono text-sm text-muted">
             run {PROVEN_RUN.executionId}
-            <ArrowUpRight className="size-3" aria-hidden />
-          </a>
+          </span>
         </div>
         <p className="mt-3 break-all text-xs leading-snug text-subtle">
-          spender {VAULT} · gas sponsored · not a deposit · not a mock
+          spender {VAULT} · gas sponsored · not a deposit · not a mock.
+          KeeperHub workflow {PROVEN_RUN.approveWorkflowId} is their graph, not
+          sky.money. Guest run pages 404. Etherscan is the public proof.
         </p>
       </article>
     </div>

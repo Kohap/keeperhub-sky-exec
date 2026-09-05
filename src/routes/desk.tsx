@@ -845,18 +845,12 @@ function ProvenRun() {
       </div>
       <p className="mt-1.5 text-xs leading-snug text-muted">
         Sky approve 0 USDS for sUSDS vault · {PROVEN_RUN.network}. Gas
-        sponsored. Not a deposit. Not a mock.
+        sponsored. Not a deposit. Not a mock. KeeperHub graph, not sky.money.
       </p>
       <div className="mt-1.5 flex flex-wrap gap-x-4 font-mono text-xs">
-        <a
-          className="group inline-flex min-h-8 items-center gap-1 text-muted hover:text-accent"
-          href={PROVEN_RUN.keeperhubOpenUrl}
-          target="_blank"
-          rel="noreferrer"
-        >
+        <span className="inline-flex min-h-8 items-center text-muted">
           run {PROVEN_RUN.executionId}
-          <ArrowUpRight className="size-3 transition-transform duration-(--motion-fast) ease-(--ease-out) group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-        </a>
+        </span>
         <a
           className="group inline-flex min-h-8 items-center gap-1 text-muted hover:text-accent"
           href={PROVEN_RUN.txUrl}
@@ -869,10 +863,11 @@ function ProvenRun() {
         <a
           className="group inline-flex min-h-8 items-center gap-1 text-muted hover:text-accent"
           href={PROVEN_RUN.approveWorkflowUrl}
+          title="KeeperHub session. Not Sky.money."
           target="_blank"
           rel="noreferrer"
         >
-          workflow {PROVEN_RUN.approveWorkflowId}
+          KeeperHub workflow
           <ArrowUpRight className="size-3 transition-transform duration-(--motion-fast) ease-(--ease-out) group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </a>
       </div>

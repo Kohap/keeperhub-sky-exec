@@ -108,7 +108,7 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
-              <a href={PROVEN_RUN.keeperhubOpenUrl} target="_blank" rel="noreferrer" className={footLink}>
+              <a href={PROVEN_RUN.txUrl} target="_blank" rel="noreferrer" className={footLink}>
                 Recorded run
               </a>
             </li>
@@ -139,7 +139,7 @@ export function SiteFooter() {
                 rel="noreferrer"
                 className={footLink}
               >
-                Workflow
+                KeeperHub workflow
               </a>
             </li>
           </ul>
