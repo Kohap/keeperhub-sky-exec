@@ -289,18 +289,13 @@ function Home() {
 
   return (
     <div className="relative min-h-screen">
-      <SvStage>
+      <SvStage className="sv-stage-desk">
         <div className="sv-orbit">
-          <img
-            src="/visuals/sv31.jpg"
-            alt=""
-            className="sv-plane h-full w-full object-cover object-[80%_center] opacity-40"
-            decoding="async"
-          />
+          <div className="sv-plane" />
         </div>
         <div className="sv-veil bg-gradient-to-r from-bg via-bg/88 to-bg/55" />
       </SvStage>
-      <main className="rise-in relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col gap-4 px-4 py-5 sm:gap-5 sm:px-6 sm:py-6">
+      <main className="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col gap-4 px-4 py-5 sm:gap-5 sm:px-6 sm:py-6">
       <SiteNav />
       <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="max-w-2xl">

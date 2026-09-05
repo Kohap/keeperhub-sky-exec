@@ -157,7 +157,12 @@
       transparent 60%
     );
     background-size: 200% 100%;
-    animation: shine 4.5s linear infinite;
+    background-position: 120% 0;
+    opacity: 0;
+  }
+  .btn-shine:hover::after {
+    opacity: 1;
+    animation: shine 0.7s linear;
   }
 
   .kh-stub {
@@ -199,6 +204,12 @@
   .sv-plane {
     position: absolute;
     inset: 0;
+    background-image: url("/visuals/sv31.jpg");
+    background-size: cover;
+    background-position: 80% center;
+  }
+  .sv-stage-desk .sv-plane {
+    opacity: 0.4;
   }
   .sv-veil {
     position: absolute;

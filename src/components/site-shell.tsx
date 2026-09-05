@@ -47,12 +47,7 @@ export function SiteFrame({
     <div className="relative min-h-dvh">
       <SvStage>
         <div className="sv-orbit">
-          <img
-            src="/visuals/sv31.jpg"
-            alt=""
-            className="sv-plane h-full w-full object-cover object-[80%_center]"
-            decoding="async"
-          />
+          <div className="sv-plane" />
         </div>
         <div className="sv-veil bg-gradient-to-r from-bg via-bg/82 to-bg/25 sm:via-bg/70 sm:to-bg/15" />
       </SvStage>
