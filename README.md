@@ -4,7 +4,19 @@ A Claude/MCP agent composes a Sky sUSDS deposit or withdraw workflow on KeeperHu
 
 This repo is the **agent + policy + dry-run + audit glue**. Sky Protocol is the live project. KeeperHub is the deterministic execution layer. This repo is not KeeperHub.
 
+**Track:** DoraHacks [KeeperHub — The Agent Economy](https://dorahacks.io/hackathon/agent-economy) · **Main — Best Integration into a Live Project** (not the bounty). Form paste: [`docs/SUBMISSION.md`](docs/SUBMISSION.md).
+
 **Source:** [github.com/Kohap/keeperhub-sky-exec](https://github.com/Kohap/keeperhub-sky-exec)
+
+## Judges — three links
+
+| Required | URL |
+| --- | --- |
+| GitHub | https://github.com/Kohap/keeperhub-sky-exec |
+| Video | [docs/demo-90s.mp4](https://github.com/Kohap/keeperhub-sky-exec/blob/main/docs/demo-90s.mp4) |
+| KeeperHub tx | [0x28a94c…cc04](https://etherscan.io/tx/0x28a94c68511a06e77f5e0c516e893335b6c18f17caead4de3a29421072c6cc04) on Ethereum, via MCP `execute_workflow` `r7grdajtci7hf757zd9xr` |
+
+Desk: [keeperhub-sky-exec.vercel.app/desk](https://keeperhub-sky-exec.vercel.app/desk). Live project on the other side: **Sky (USDS/sUSDS)**, not this UI.
 
 ## Submission facts
 
