@@ -87,8 +87,9 @@ function DocsPage() {
             <p className="mt-3">
               <code className="font-mono text-fg">src/lib/pipeline-input.ts</code>
               . Prompt 1–400 chars, tags stripped. Key empty or{" "}
-              <code className="font-mono text-fg">kh_</code>. Server re-parses.
-              The client is not trusted. User keys{" "}
+              <code className="font-mono text-fg">kh_</code>. Kill switch may
+              force ON, never OFF. Cooldown is server-side; the client timestamp
+              is ignored. Server re-parses. The client is not trusted. User keys{" "}
               <code className="font-mono text-fg">wfb_</code> 401.
             </p>
           </section>
@@ -97,12 +98,16 @@ function DocsPage() {
             <h2 className="text-base font-medium text-fg">Compose</h2>
             <p className="mt-3">
               <code className="font-mono text-fg">composeIntent</code> takes
-              the first decimal as amount. No number plus “approve” → 0.
-              Otherwise 1. withdraw/redeem → sUSDS vault out. approve →{" "}
+              the first number-like token as amount. Scientific notation is
+              kept so policy can reject it. No number plus “approve” → 0.
+              Otherwise 1. withdraw → sUSDS vault out. redeem →{" "}
+              <code className="font-mono text-fg">sky/vault-redeem</code>, not
+              deposit. approve →{" "}
               <code className="font-mono text-fg">sky/approve-usds</code>.
               deposit/save →{" "}
               <code className="font-mono text-fg">sky/vault-deposit</code>.
-              Chain is always 1. Spender is always the vault.
+              Chain is always 1. Spender is always the vault. Receiver is the
+              org wallet, never 0x0.
             </p>
             <p className="mt-3">
               <code className="font-mono text-fg">workflowFromIntent</code>{" "}
@@ -116,11 +121,11 @@ function DocsPage() {
             <h2 className="text-base font-medium text-fg">Policy</h2>
             <p className="mt-3">
               <code className="font-mono text-fg">assertAllowed</code> is
-              deterministic. Order: kill switch, chain 1, Sky action
-              allowlist, USDS or sUSDS, amount ≤ 10, 30s cooldown. The desk
-              button Policy check is compose plus this function. It does not
-              call MCP. Reject skips Dry-run and Execute. Failure path:
-              deposit 100 USDS.
+              deterministic. Order: kill switch (env sticky), chain 1, Sky
+              action allowlist, USDS or sUSDS, amount ≤ 10 in wei-18, non-zero
+              receiver, 30s server cooldown. The desk button Policy check is
+              compose plus this function. It does not call MCP. Reject skips
+              Dry-run and Execute. Failure path: deposit 100 USDS.
             </p>
           </section>
 
@@ -131,7 +136,9 @@ function DocsPage() {
               is still on their roadmap. We validate the graph, then{" "}
               <code className="font-mono text-fg">POST /api/execute/contract-call</code>{" "}
               with <code className="font-mono text-fg">simulate: true</code>.
-              Approve hits USDS.approve. Deposit hits vault.deposit. We do not
+              Approve hits USDS.approve. Deposit hits vault.deposit. Withdraw
+              hits vault.withdraw. Redeem hits vault.redeem. We do not
+              simulate a withdraw as deposit. We do not
               call <code className="font-mono text-fg">/api/execute/sky/approve-usds</code>{" "}
               for dry-run — that path ignored simulate in our tests and
               broadcast.
@@ -181,9 +188,10 @@ function DocsPage() {
             <h2 className="text-base font-medium text-fg">Failure paths</h2>
             <ul className="mt-3 space-y-2">
               <li>Amount 100 → policy reject. No write.</li>
-              <li>Kill switch → Execute blocked. No write.</li>
+              <li>Kill switch → Execute blocked. No write. Client cannot turn env OFF.</li>
               <li>wouldRevert → dry_run_fail. Execute skipped.</li>
               <li>Unfunded deposit → vault would revert (org USDS is 0).</li>
+              <li>Receiver 0x0 → policy reject. No mint-to-burn.</li>
               <li>Fixture execute → recorded hash, labeled recorded.</li>
             </ul>
             <p className="mt-4">

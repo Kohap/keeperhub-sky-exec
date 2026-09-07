@@ -5,10 +5,12 @@
  *   npm run compose -- "approve 0 USDS for the sUSDS vault" --dry-run
  *   npm run compose -- "approve 0 USDS for the sUSDS vault" --execute
  */
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import {
   assertAllowed,
   loadLimitsFromEnv,
+  recordExecute,
   type PolicyLimits,
 } from "../../policy/src/index.ts";
 import {
@@ -21,6 +23,9 @@ import {
 } from "../../keeperhub/src/index.ts";
 import { createJsonlAudit } from "../../audit/src/jsonl.ts";
 import { stamp } from "../../audit/src/memory.ts";
+
+const LAST_FILE = resolve("data/last-execute.json");
+const COOL_KEY = "cli";
 
 function argFlag(name: string): boolean {
   return process.argv.includes(name);
@@ -55,16 +60,40 @@ function printDecision(label: string, value: unknown) {
   console.log(JSON.stringify(value, null, 2));
 }
 
+function loadPersistedLast(): number | undefined {
+  try {
+    const raw = JSON.parse(readFileSync(LAST_FILE, "utf8")) as { at?: number };
+    if (typeof raw.at === "number" && Number.isFinite(raw.at) && raw.at >= 0) {
+      recordExecute(COOL_KEY, raw.at);
+      return raw.at;
+    }
+  } catch {
+    /* first run */
+  }
+  return undefined;
+}
+
+function persistLast(at: number) {
+  recordExecute(COOL_KEY, at);
+  try {
+    mkdirSync(resolve("data"), { recursive: true });
+    writeFileSync(LAST_FILE, `${JSON.stringify({ at })}\n`);
+  } catch {
+    /* ignore */
+  }
+}
+
 async function main() {
   const prompt =
     positionalPrompt() || "deposit spare USDS above 100 into sUSDS";
   const intent = composeIntent(prompt);
-  const overrides: Partial<PolicyLimits> = {};
+  const overrides: Partial<PolicyLimits> = {
+    lastExecuteAtMs: loadPersistedLast(),
+  };
   if (argFlag("--kill")) overrides.killSwitch = true;
   const limits = loadLimitsFromEnv(process.env, overrides);
   const policy = assertAllowed(intent, limits);
   const audit = createJsonlAudit(resolve("data/audit.jsonl"));
-  const workflow = workflowFromIntent(intent);
 
   console.log("Sky Exec  ·  compose → policy → dry-run → execute → audit");
   printDecision("intent", intent);
@@ -86,6 +115,7 @@ async function main() {
     return;
   }
 
+  const workflow = workflowFromIntent(intent);
   const { kh, mode } = client();
   if (mode === "fixture") {
     console.log("\nNo KEEPERHUB_API_KEY — using fixture adapter.");
@@ -122,6 +152,7 @@ async function main() {
     return;
   }
 
+  persistLast(Date.now());
   const run = await kh.execute(workflow);
   printDecision("execute", {
     executionId: run.executionId,

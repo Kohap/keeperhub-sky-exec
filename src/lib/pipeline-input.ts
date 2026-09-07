@@ -17,7 +17,12 @@ export const pipelineInputSchema = z.object({
     )
     .optional()
     .or(z.literal("")),
+  /** Client may force ON. Server env KILL_SWITCH cannot be forced off. */
   killSwitch: z.boolean().optional(),
+  /**
+   * Deprecated. Ignored by the server. Cooldown is stored process-side so
+   * omitting or backdating this field cannot skip the gate.
+   */
   lastExecuteAtMs: z.number().int().nonnegative().optional(),
 });
 
@@ -43,7 +48,6 @@ export function parsePipelineInput(raw: unknown): {
     prompt: string;
     apiKey?: string;
     killSwitch?: boolean;
-    lastExecuteAtMs?: number;
   };
 } | { ok: false; errors: Record<string, string> } {
   const src =
@@ -68,7 +72,6 @@ export function parsePipelineInput(raw: unknown): {
       prompt: result.data.prompt,
       apiKey,
       killSwitch: result.data.killSwitch,
-      lastExecuteAtMs: result.data.lastExecuteAtMs,
     },
   };
 }

@@ -1,7 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
   assertAllowed,
-  loadLimitsFromEnv,
+  loadLimitsForRequest,
+  orgCooldownKey,
+  recordExecute,
 } from "../../packages/policy/src/index.ts";
 import {
   composeIntent,
@@ -20,6 +22,7 @@ export type PipelineInput = {
   prompt: string;
   apiKey?: string;
   killSwitch?: boolean;
+  /** Ignored. Cooldown is server-side. Kept so old clients still parse. */
   lastExecuteAtMs?: number;
 };
 
@@ -53,24 +56,23 @@ export async function runPipeline(
   stage: PipelineStage,
 ): Promise<PipelineOutput> {
   const intent = composeIntent(sanitizePrompt(data.prompt));
-  const policy = assertAllowed(
-    intent,
-    loadLimitsFromEnv(process.env, {
-      killSwitch: data.killSwitch,
-      lastExecuteAtMs: data.lastExecuteAtMs,
-    }),
-  );
-  const workflow = workflowFromIntent(intent);
+  const limits = loadLimitsForRequest(process.env, {
+    killSwitch: data.killSwitch,
+    apiKey: data.apiKey,
+  });
+  const policy = assertAllowed(intent, limits);
   const { kh, mode } = pickClient(data.apiKey);
   const base: PipelineOutput = {
     intent,
     policy,
-    workflowName: workflow.name,
+    workflowName: intent.actionType,
     mode,
   };
   if (!policy.allow) {
     return { ...base, error: "policy_reject" };
   }
+  const workflow = workflowFromIntent(intent);
+  base.workflowName = workflow.name;
   if (stage === "compose") {
     return base;
   }
@@ -83,6 +85,18 @@ export async function runPipeline(
       error: dryRun.ok ? undefined : "dry_run_fail",
     };
   }
+  const cooldownKey = orgCooldownKey(data.apiKey);
+  const again = assertAllowed(
+    intent,
+    loadLimitsForRequest(process.env, {
+      killSwitch: data.killSwitch,
+      apiKey: data.apiKey,
+    }),
+  );
+  if (!again.allow) {
+    return { ...base, policy: again, dryRun, error: "policy_reject" };
+  }
+  recordExecute(cooldownKey);
   const run = await kh.execute(workflow);
   return {
     ...base,

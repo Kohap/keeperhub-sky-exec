@@ -8,7 +8,7 @@ prompt
   → composeIntent
   → assertAllowed (policy)
   → workflowFromIntent
-  → dryRun (validate_workflow + contract-call simulate)
+  → dryRun (validate_workflow + contract-call simulate of the *same* write)
   → execute_workflow
   → audit
 ```
@@ -35,8 +35,8 @@ Desk and server fns share `src/lib/pipeline-input.ts`.
 
 - Prompt: trim, strip tags/nulls, 1–400 characters.
 - API key: empty (fixture) or `kh_[A-Za-z0-9]+`. User keys `wfb_` 401 here.
-- Kill switch: boolean.
-- Last execute timestamp: non-negative int, for cooldown.
+- Kill switch: boolean. Client may force **ON**. Server `KILL_SWITCH=1` cannot be forced off (`false` does not win over env).
+- Last execute timestamp: accepted for old clients, **ignored**. Cooldown is a server-side store (`packages/policy/src/cooldown.ts`). CLI also writes `data/last-execute.json`.
 
 The server re-parses. The client is not trusted.
 
@@ -46,20 +46,24 @@ The server re-parses. The client is not trusted.
 
 `packages/keeperhub/src/compose.ts` · `composeIntent(prompt)`
 
-The first decimal in the prompt is the amount. No number + “approve” → `0`. No number otherwise → `1`.
+The first number-like token in the prompt is the amount. Scientific notation (`1e2`) is kept so policy can reject it. No number + “approve” → `0`. No number otherwise → `1`. Amounts are canonical human decimals (no IEEE `Number()`).
 
 | Prompt contains | Action | Asset |
 | --- | --- | --- |
-| withdraw / redeem | `sky/vault-withdraw` or `sky/vault-redeem` | sUSDS |
+| withdraw | `sky/vault-withdraw` | sUSDS |
+| redeem | `sky/vault-redeem` | sUSDS |
 | approve | `sky/approve-usds` | USDS |
 | deposit / save / susds | `sky/vault-deposit` | USDS |
 
 Chain is always `1`. Approve spender is always the sUSDS vault.
 
+Receiver/owner for deposit, withdraw, and redeem: `KEEPERHUB_ORG_WALLET` or the recorded Turnkey org wallet `0x0f7cc9e7dadac4d885b8878b7e08761843fe781d`. **Never `0x0`.** ERC-4626 `deposit(assets, 0x0)` mints shares to the burn address.
+
 `workflowFromIntent` then builds a KeeperHub graph:
 
 - **approve** — Manual trigger → one `sky/approve-usds` node. Amount in wei-18.
 - **withdraw** — Manual trigger → `sky/vault-withdraw`.
+- **redeem** — Manual trigger → `sky/vault-redeem`. (Does not fall through to deposit.)
 - **deposit** — Manual trigger → approve, then `sky/vault-deposit`. Two writes. Edges are sequential.
 
 Workflows are created `enabled: false`. Execution is on demand, not a schedule.
@@ -72,16 +76,19 @@ Workflows are created `enabled: false`. Execution is on demand, not a schedule.
 
 Deterministic. Order:
 
-1. Kill switch → reject.
+1. Kill switch → reject. Env ON is sticky; overrides can only force ON.
 2. Chain must be 1.
 3. Action must be in the Sky allowlist (`sky/approve-usds`, vault deposit/withdraw/redeem, plus read helpers).
 4. Asset must be USDS or sUSDS.
-5. Amount must be a finite decimal ≥ 0 and ≤ cap (default 10).
-6. Cooldown (default 30s) since last execute.
+5. Amount must be a canonical human decimal ≥ 0, compared to the cap in wei-18 (not IEEE). Default cap 10 USDS.
+6. Deposit / withdraw / redeem require a non-zero receiver.
+7. Cooldown (default 30s) since last execute, from the **server store**, not the request body.
 
 A reject never calls KeeperHub execute. The DoraHacks failure path is `deposit spare USDS above 100 into sUSDS` (100 > 10).
 
 Limits load from env: `POLICY_MAX_USDS`, `POLICY_CHAIN_ID`, `POLICY_COOLDOWN_SECONDS`, `KILL_SWITCH`.
+
+`loadLimitsForRequest` is what the desk and `runPipeline` use.
 
 ---
 
@@ -89,12 +96,16 @@ Limits load from env: `POLICY_MAX_USDS`, `POLICY_CHAIN_ID`, `POLICY_COOLDOWN_SEC
 
 KeeperHub’s workflow-level `test_workflow` is still on their roadmap. We do not pretend it exists.
 
-Live adapter (`packages/keeperhub/src/mcp.ts`):
+Live adapter (`packages/keeperhub/src/mcp.ts` · `simulatePlan`):
 
 1. `validate_workflow` if we already have an id.
-2. `POST /api/execute/contract-call` with `simulate: true`.
+2. `POST /api/execute/contract-call` with `simulate: true` for **every** Sky write, in order. A two-node deposit graph simulates approve **and** deposit. Any hop that would revert fails the dry-run.
    - Approve: USDS `approve(spender, amount)` at `0xdC03…384F`.
    - Deposit: vault `deposit(assets, receiver)` at `0xa393…27fbD`.
+   - Withdraw: vault `withdraw(assets, receiver, owner)`.
+   - Redeem: vault `redeem(shares, receiver, owner)`.
+
+A withdraw/redeem must not be simulated as `deposit()`. That used to false-OK a live withdraw.
 
 We do **not** dry-run via `POST /api/execute/sky/approve-usds`. In testing that path ignored `simulate: true` and broadcast.
 
@@ -105,9 +116,11 @@ Success: `ok`, `wouldRevert: false`, gas estimate. Failure: `dry_run_fail`. Exec
 ## 6. Execute
 
 1. `create_workflow` if the graph has no id (`enabled: false`).
-2. MCP `execute_workflow` with an idempotency key.
+2. MCP `execute_workflow` with `idempotency_key = exec:<workflowId>:<cooldownBucket>`. Double-clicks inside the cooldown window reuse the key. `Date.now()` is not part of the key.
 3. Poll `get_execution` up to ~60s.
 4. First transaction hash is the explorer proof.
+
+`runPipeline` records the cooldown timestamp **synchronously before** `await execute()`, so two in-flight requests in one process cannot both pass the gate.
 
 Turnkey org wallet: `0x0f7cc9e7dadac4d885b8878b7e08761843fe781d`. This repo never holds a raw private key.
 
@@ -127,7 +140,7 @@ Recorded live run (2026-09-04):
 - `kh_…` → `createMcpAdapter` (live MCP).
 - Empty or anything else → `createFixtureAdapter`.
 
-Fixture **does not invent a hash**. Execute returns the recorded live run. The desk labels those rows `recorded`. Empty key is how a judge walks the 90s path without an org.
+Fixture **does not invent a hash**. Execute returns the recorded live run. The desk labels those rows `recorded`. Empty key is how a judge walks the 90s path without an org. Fixture will not pretend a deposit or withdraw landed.
 
 ---
 
@@ -142,7 +155,12 @@ CLI writes JSONL. Desk stores rows in `localStorage` (`sky-exec-audit-v1`). Each
 | Path | What you see | Chain write |
 | --- | --- | --- |
 | Amount 100 | policy reject, exceeds cap 10 | No |
-| Kill switch | Execute blocked | No |
+| `10.000000000000000001` | policy reject (wei cap, not IEEE) | No |
+| `1e2` | policy reject, not a valid decimal | No |
+| Kill switch (env or client ON) | Execute blocked | No |
+| Client `killSwitch: false` while env is on | Still blocked | No |
+| Cooldown (server store) | Wait Ns | No |
+| Receiver `0x0` | policy + simulate reject | No |
 | Dry-run wouldRevert | `dry_run_fail` | No |
 | Unfunded deposit | vault would revert (0 USDS on the org wallet) | No |
 | Fixture execute | recorded hash, labeled recorded | No new tx |

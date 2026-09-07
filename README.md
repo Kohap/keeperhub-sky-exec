@@ -53,7 +53,7 @@ compose → policy → dry-run → KeeperHub execute → audit
 | `packages/audit` | `append(record)` / `list()` — JSONL on CLI, local rows in the UI |
 | `packages/cli` | `npm run compose -- "<prompt>"` |
 
-Policy hides: max amount (default 10 USDS), allowlisted action types, allowlisted assets (USDS/sUSDS only), cooldown, kill switch (`KILL_SWITCH=1`), chain id `1`.
+Policy hides: max amount (default 10 USDS, compared in wei-18), allowlisted action types, allowlisted assets (USDS/sUSDS only), server-side cooldown, kill switch (`KILL_SWITCH=1` is sticky — the client cannot turn it off), chain id `1`, non-zero receiver.
 
 ## 90-second demo
 

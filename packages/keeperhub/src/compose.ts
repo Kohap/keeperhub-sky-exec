@@ -1,15 +1,29 @@
 import type { Intent } from "../../policy/src/index.ts";
 import type { AllowedActionType } from "../../policy/src/index.ts";
-import { SKY_CHAIN_ID, SUSDS_VAULT_ADDRESS, toWei18 } from "./sky.ts";
+import { HUMAN_AMOUNT_RE } from "../../policy/src/amount.ts";
+import {
+  SKY_CHAIN_ID,
+  SUSDS_VAULT_ADDRESS,
+  resolveReceiver,
+  toWei18,
+} from "./sky.ts";
 import type { Workflow } from "./types.ts";
 
-const NUMBER = /(\d+(?:\.\d+)?)/;
+const NUMBERISH = /(\d+(?:\.\d+)?(?:e[+-]?\d+)?)/i;
 
-export function composeIntent(prompt: string): Intent {
+export function composeIntent(
+  prompt: string,
+  env: Record<string, string | undefined> = typeof process !== "undefined"
+    ? process.env
+    : {},
+): Intent {
   const text = prompt.trim();
   const lower = text.toLowerCase();
-  const match = lower.match(NUMBER);
-  const amountHuman = match?.[1] ?? (lower.includes("approve") ? "0" : "1");
+  const match = lower.match(NUMBERISH);
+  let amountHuman = match?.[1] ?? (lower.includes("approve") ? "0" : "1");
+  if (match?.[1] && !HUMAN_AMOUNT_RE.test(match[1])) {
+    amountHuman = match[1];
+  }
 
   let actionType: AllowedActionType = "sky/vault-deposit";
   if (/\bwithdraw\b|\bredeem\b/.test(lower)) {
@@ -22,9 +36,15 @@ export function composeIntent(prompt: string): Intent {
     actionType = "sky/vault-deposit";
   }
 
-  const asset = actionType.includes("withdraw") || actionType.includes("redeem")
-    ? "sUSDS"
-    : "USDS";
+  const asset =
+    actionType.includes("withdraw") || actionType.includes("redeem")
+      ? "sUSDS"
+      : "USDS";
+
+  const needsReceiver =
+    actionType === "sky/vault-deposit" ||
+    actionType === "sky/vault-withdraw" ||
+    actionType === "sky/vault-redeem";
 
   return {
     prompt: text,
@@ -33,7 +53,7 @@ export function composeIntent(prompt: string): Intent {
     amountHuman,
     chainId: SKY_CHAIN_ID,
     spender: actionType === "sky/approve-usds" ? SUSDS_VAULT_ADDRESS : undefined,
-    receiver: undefined,
+    receiver: needsReceiver ? resolveReceiver(undefined, env) : undefined,
   };
 }
 
@@ -70,6 +90,8 @@ export function workflowFromIntent(intent: Intent): Workflow {
     };
   }
 
+  const party = resolveReceiver(intent.receiver);
+
   if (intent.actionType === "sky/vault-withdraw") {
     return {
       name: `Sky sUSDS withdraw ${intent.amountHuman} USDS`,
@@ -86,13 +108,39 @@ export function workflowFromIntent(intent: Intent): Workflow {
               actionType: "sky/vault-withdraw",
               network: String(intent.chainId),
               assets: amountWei,
-              receiver: intent.receiver ?? "0x0000000000000000000000000000000000000000",
-              owner: intent.receiver ?? "0x0000000000000000000000000000000000000000",
+              receiver: party,
+              owner: party,
             },
           },
         },
       ],
       edges: [{ id: "e1", source: "trigger-1", target: "withdraw-1" }],
+    };
+  }
+
+  if (intent.actionType === "sky/vault-redeem") {
+    return {
+      name: `Sky sUSDS redeem ${intent.amountHuman}`,
+      description: intent.prompt,
+      enabled: false,
+      nodes: [
+        trigger,
+        {
+          id: "redeem-1",
+          type: "action",
+          data: {
+            label: "Redeem sUSDS for USDS",
+            config: {
+              actionType: "sky/vault-redeem",
+              network: String(intent.chainId),
+              shares: amountWei,
+              receiver: party,
+              owner: party,
+            },
+          },
+        },
+      ],
+      edges: [{ id: "e1", source: "trigger-1", target: "redeem-1" }],
     };
   }
 
@@ -124,7 +172,7 @@ export function workflowFromIntent(intent: Intent): Workflow {
             actionType: "sky/vault-deposit",
             network: String(intent.chainId),
             assets: amountWei,
-            receiver: intent.receiver ?? "0x0000000000000000000000000000000000000000",
+            receiver: party,
           },
         },
       },

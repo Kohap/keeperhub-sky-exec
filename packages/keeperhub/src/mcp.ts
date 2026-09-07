@@ -1,6 +1,7 @@
 import {
   SUSDS_VAULT_ADDRESS,
   USDS_ADDRESS,
+  isZeroAddress,
 } from "./sky.ts";
 import { PROVEN_RUN } from "./proof.ts";
 import type {
@@ -19,26 +20,141 @@ export type McpAdapterOptions = {
 
 type Json = Record<string, unknown>;
 
-function clipKey(key: string): string {
-  return key.slice(0, 8) + "…";
+const WRITE_ACTIONS = new Set([
+  "sky/approve-usds",
+  "sky/vault-deposit",
+  "sky/vault-withdraw",
+  "sky/vault-redeem",
+]);
+
+export type SimulatePlan =
+  | {
+      kind: "call";
+      contractAddress: string;
+      functionName: string;
+      functionArgs: unknown[];
+    }
+  | { kind: "skip"; reason: string }
+  | { kind: "error"; error: string };
+
+function writeActionNodes(workflow: Workflow) {
+  return workflow.nodes.filter(
+    (n) =>
+      n.type === "action" &&
+      typeof n.data.config.actionType === "string" &&
+      WRITE_ACTIONS.has(n.data.config.actionType),
+  );
 }
 
-function parseToolText(payload: unknown): unknown {
-  if (!payload || typeof payload !== "object") return payload;
-  const root = payload as Json;
-  const result = (root.result ?? root) as Json;
-  const content = result.content;
-  if (Array.isArray(content) && content[0] && typeof content[0] === "object") {
-    const text = (content[0] as Json).text;
-    if (typeof text === "string") {
-      try {
-        return JSON.parse(text);
-      } catch {
-        return text;
-      }
-    }
+function requireReceiver(addr: string | undefined, label: string): string | { error: string } {
+  if (!addr || isZeroAddress(addr)) {
+    return {
+      error: `${label} must not be the zero address`,
+    };
   }
-  return result;
+  return addr;
+}
+
+export function planForNode(node: Workflow["nodes"][number]): SimulatePlan {
+  const action = node.data.config.actionType;
+  const cfg = node.data.config;
+
+  if (action === "sky/approve-usds") {
+    return {
+      kind: "call",
+      contractAddress: USDS_ADDRESS,
+      functionName: "approve",
+      functionArgs: [
+        cfg.spender ?? SUSDS_VAULT_ADDRESS,
+        cfg.amount ?? "0",
+      ],
+    };
+  }
+
+  if (action === "sky/vault-deposit") {
+    const receiver = requireReceiver(cfg.receiver, "deposit receiver");
+    if (typeof receiver !== "string") return { kind: "error", error: receiver.error };
+    return {
+      kind: "call",
+      contractAddress: SUSDS_VAULT_ADDRESS,
+      functionName: "deposit",
+      functionArgs: [cfg.assets ?? "0", receiver],
+    };
+  }
+
+  if (action === "sky/vault-withdraw") {
+    const receiver = requireReceiver(cfg.receiver, "withdraw receiver");
+    if (typeof receiver !== "string") return { kind: "error", error: receiver.error };
+    const owner = requireReceiver(cfg.owner ?? cfg.receiver, "withdraw owner");
+    if (typeof owner !== "string") return { kind: "error", error: owner.error };
+    return {
+      kind: "call",
+      contractAddress: SUSDS_VAULT_ADDRESS,
+      functionName: "withdraw",
+      functionArgs: [cfg.assets ?? "0", receiver, owner],
+    };
+  }
+
+  if (action === "sky/vault-redeem") {
+    const receiver = requireReceiver(cfg.receiver, "redeem receiver");
+    if (typeof receiver !== "string") return { kind: "error", error: receiver.error };
+    const owner = requireReceiver(cfg.owner ?? cfg.receiver, "redeem owner");
+    if (typeof owner !== "string") return { kind: "error", error: owner.error };
+    return {
+      kind: "call",
+      contractAddress: SUSDS_VAULT_ADDRESS,
+      functionName: "redeem",
+      functionArgs: [cfg.shares ?? cfg.assets ?? "0", receiver, owner],
+    };
+  }
+
+  return { kind: "error", error: `No simulate mapping for ${action}` };
+}
+
+/**
+ * Map Sky write nodes to the contract-call we simulate.
+ * Prefers the vault value-moving action (deposit/withdraw/redeem) over a
+ * leading approve so a two-node deposit graph is not "dry-run OK" off approve
+ * alone. dryRun() still simulates every write in order.
+ */
+export function simulatePlan(workflow: Workflow): SimulatePlan {
+  const writes = writeActionNodes(workflow);
+  if (!writes.length) {
+    return { kind: "skip", reason: "No Sky write node to simulate." };
+  }
+  const vault = writes.find((n) => {
+    const a = n.data.config.actionType;
+    return (
+      a === "sky/vault-deposit" ||
+      a === "sky/vault-withdraw" ||
+      a === "sky/vault-redeem"
+    );
+  });
+  return planForNode(vault ?? writes[0]!);
+}
+
+export function simulatePlans(workflow: Workflow): SimulatePlan[] {
+  const writes = writeActionNodes(workflow);
+  if (!writes.length) {
+    return [{ kind: "skip", reason: "No Sky write node to simulate." }];
+  }
+  return writes.map(planForNode);
+}
+
+export function executeIdempotencyKey(
+  workflowId: string,
+  cooldownSeconds: number,
+  nowMs: number = Date.now(),
+): string {
+  const windowMs = Math.max(1, cooldownSeconds) * 1000;
+  return `exec:${workflowId}:${Math.floor(nowMs / windowMs)}`;
+}
+
+function cooldownSecondsFromEnv(): number {
+  const raw =
+    typeof process !== "undefined" ? process.env.POLICY_COOLDOWN_SECONDS : undefined;
+  const n = raw && Number.isFinite(Number(raw)) ? Number(raw) : 30;
+  return n > 0 ? n : 30;
 }
 
 export function createMcpAdapter(opts: McpAdapterOptions): KeeperHubClient {
@@ -116,6 +232,24 @@ export function createMcpAdapter(opts: McpAdapterOptions): KeeperHubClient {
     });
     await mcp("notifications/initialized", {});
     initialized = true;
+  }
+
+  function parseToolText(payload: unknown): unknown {
+    if (!payload || typeof payload !== "object") return payload;
+    const root = payload as Json;
+    const result = (root.result ?? root) as Json;
+    const content = result.content;
+    if (Array.isArray(content) && content[0] && typeof content[0] === "object") {
+      const text = (content[0] as Json).text;
+      if (typeof text === "string") {
+        try {
+          return JSON.parse(text);
+        } catch {
+          return text;
+        }
+      }
+    }
+    return result;
   }
 
   async function callTool(name: string, args: Record<string, unknown>) {
@@ -202,47 +336,45 @@ export function createMcpAdapter(opts: McpAdapterOptions): KeeperHubClient {
 
     async dryRun(workflow) {
       // Workflow-level test_workflow is still on KeeperHub's roadmap.
-      // We validate the graph, then simulate the first Sky write via REST.
+      // Validate the graph, then simulate every Sky write via REST.
       if (workflow.id) {
         await callTool("validate_workflow", { workflowId: workflow.id });
       }
-      const write = workflow.nodes.find(
-        (n) =>
-          n.type === "action" &&
-          typeof n.data.config.actionType === "string" &&
-          (n.data.config.actionType === "sky/approve-usds" ||
-            n.data.config.actionType === "sky/vault-deposit" ||
-            n.data.config.actionType === "sky/vault-withdraw"),
-      );
-      if (!write) {
-        return {
-          ok: true,
-          status: "validated",
-          detailsJson: JSON.stringify({ note: "No Sky write node to simulate." }),
-        };
-      }
-      const action = write.data.config.actionType;
-      if (action === "sky/approve-usds") {
-        const { status, json } = await rest<Json>(
-          "/api/execute/contract-call",
-          {
-            method: "POST",
-            body: {
-              chainId: 1,
-              contractAddress: USDS_ADDRESS,
-              functionName: "approve",
-              functionArgs: JSON.stringify([
-                write.data.config.spender ?? SUSDS_VAULT_ADDRESS,
-                write.data.config.amount ?? "0",
-              ]),
-              simulate: true,
-            },
+      const plans = simulatePlans(workflow);
+      let last: DryRunResult | undefined;
+      for (const plan of plans) {
+        if (plan.kind === "skip") {
+          return {
+            ok: true,
+            status: "validated",
+            detailsJson: JSON.stringify({ note: plan.reason }),
+          };
+        }
+        if (plan.kind === "error") {
+          return {
+            ok: false,
+            status: "rejected",
+            wouldRevert: true,
+            detailsJson: JSON.stringify({ error: plan.error }),
+            error: plan.error,
+          };
+        }
+        const { status, json } = await rest<Json>("/api/execute/contract-call", {
+          method: "POST",
+          body: {
+            chainId: 1,
+            contractAddress: plan.contractAddress,
+            functionName: plan.functionName,
+            functionArgs: JSON.stringify(plan.functionArgs),
+            simulate: true,
           },
-        );
-        const wouldRevert = Boolean((json as Json).wouldRevert);
-        return {
+        });
+        const wouldRevert = Boolean((json as Json).wouldRevert) || status >= 400;
+        last = {
           ok: status < 400 && !wouldRevert,
-          status: String((json as Json).status ?? "simulated"),
+          status: String(
+            (json as Json).status ?? (wouldRevert ? "would_revert" : "simulated"),
+          ),
           wouldRevert,
           gasEstimate: (json as Json).gasEstimate
             ? String((json as Json).gasEstimate)
@@ -250,39 +382,20 @@ export function createMcpAdapter(opts: McpAdapterOptions): KeeperHubClient {
           from: (json as Json).from ? String((json as Json).from) : undefined,
           to: (json as Json).to ? String((json as Json).to) : undefined,
           detailsJson: JSON.stringify(json).slice(0, 4000),
-          error: (json as Json).error ? String((json as Json).error) : undefined,
+          error:
+            (json as Json).error || (json as Json).message
+              ? String((json as Json).error ?? (json as Json).message)
+              : undefined,
         };
+        if (!last.ok) return last;
       }
-      const { status, json } = await rest<Json>("/api/execute/contract-call", {
-        method: "POST",
-        body: {
-          chainId: 1,
-          contractAddress: SUSDS_VAULT_ADDRESS,
-          functionName: "deposit",
-          functionArgs: JSON.stringify([
-            write.data.config.assets ?? "0",
-            write.data.config.receiver ??
-              "0x0000000000000000000000000000000000000000",
-          ]),
-          simulate: true,
-        },
-      });
-      const wouldRevert = Boolean((json as Json).wouldRevert) || status >= 400;
-      return {
-        ok: status < 400 && !wouldRevert,
-        status: String((json as Json).status ?? (wouldRevert ? "would_revert" : "simulated")),
-        wouldRevert,
-        gasEstimate: (json as Json).gasEstimate
-          ? String((json as Json).gasEstimate)
-          : undefined,
-        from: (json as Json).from ? String((json as Json).from) : undefined,
-        to: (json as Json).to ? String((json as Json).to) : undefined,
-        detailsJson: JSON.stringify(json).slice(0, 4000),
-        error:
-          (json as Json).error || (json as Json).message
-            ? String((json as Json).error ?? (json as Json).message)
-            : undefined,
-      };
+      return (
+        last ?? {
+          ok: true,
+          status: "validated",
+          detailsJson: JSON.stringify({ note: "No Sky write node to simulate." }),
+        }
+      );
     },
 
     async execute(workflow) {
@@ -293,11 +406,11 @@ export function createMcpAdapter(opts: McpAdapterOptions): KeeperHubClient {
       }
       const parsed = (await callTool("execute_workflow", {
         workflowId: id,
-        idempotency_key: `exec:${id}:${Date.now()}`,
+        idempotency_key: executeIdempotencyKey(id, cooldownSecondsFromEnv()),
       })) as Json;
       const executionId = String(parsed.executionId ?? "");
       if (!executionId) {
-        throw new Error(`execute_workflow did not return an id (${clipKey(opts.apiKey)})`);
+        throw new Error("execute_workflow did not return an execution id");
       }
       for (let i = 0; i < 30; i++) {
         const run = await this.getRun(executionId);

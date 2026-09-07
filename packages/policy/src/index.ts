@@ -1,3 +1,14 @@
+import { capToWei, parseHumanAmount } from "./amount.ts";
+import { orgCooldownKey, readLastExecuteAtMs } from "./cooldown.ts";
+
+export { capToWei, HUMAN_AMOUNT_RE, parseHumanAmount, toWei18 } from "./amount.ts";
+export {
+  orgCooldownKey,
+  readLastExecuteAtMs,
+  recordExecute,
+  resetCooldownStoreForTests,
+} from "./cooldown.ts";
+
 export const ALLOWED_ACTION_TYPES = [
   "sky/get-usds-balance",
   "sky/vault-preview-deposit",
@@ -13,6 +24,15 @@ export const ALLOWED_ASSETS = ["USDS", "sUSDS"] as const;
 
 export type AllowedActionType = (typeof ALLOWED_ACTION_TYPES)[number];
 export type AllowedAsset = (typeof ALLOWED_ASSETS)[number];
+
+const ZERO_ADDRESS_RE = /^0x0{40}$/i;
+const ADDRESS_RE = /^0x[0-9a-fA-F]{40}$/;
+
+const WRITE_ACTIONS_NEED_RECEIVER: ReadonlySet<string> = new Set([
+  "sky/vault-deposit",
+  "sky/vault-withdraw",
+  "sky/vault-redeem",
+]);
 
 export type Intent = {
   prompt: string;
@@ -43,6 +63,16 @@ const DEFAULT_MAX = 10;
 const DEFAULT_CHAIN = 1;
 const DEFAULT_COOLDOWN = 30;
 
+function envFlagTrue(raw: string | undefined): boolean {
+  return raw === "1" || raw === "true";
+}
+
+/**
+ * Deterministic limits.
+ *
+ * Kill switch: env ON is sticky. Overrides may force it ON (`true`) but must
+ * never force it OFF — `false ?? env` used to disable a server KILL_SWITCH.
+ */
 export function loadLimitsFromEnv(
   env: Record<string, string | undefined> = typeof process !== "undefined"
     ? process.env
@@ -52,10 +82,9 @@ export function loadLimitsFromEnv(
   const maxRaw = env.POLICY_MAX_USDS;
   const chainRaw = env.POLICY_CHAIN_ID;
   const coolRaw = env.POLICY_COOLDOWN_SECONDS;
+  const envKill = envFlagTrue(env.KILL_SWITCH);
   return {
-    killSwitch:
-      overrides.killSwitch ??
-      (env.KILL_SWITCH === "1" || env.KILL_SWITCH === "true"),
+    killSwitch: envKill || overrides.killSwitch === true,
     maxAmountHuman:
       overrides.maxAmountHuman ??
       (maxRaw && Number.isFinite(Number(maxRaw)) ? Number(maxRaw) : DEFAULT_MAX),
@@ -76,10 +105,20 @@ export function loadLimitsFromEnv(
   };
 }
 
-function parseAmount(human: string): number | null {
-  const n = Number(human);
-  if (!Number.isFinite(n) || n < 0) return null;
-  return n;
+/**
+ * Limits for an untrusted desk/CLI request. Cooldown timestamp comes from the
+ * server store, never from the body. Kill switch still cannot be forced off.
+ */
+export function loadLimitsForRequest(
+  env: Record<string, string | undefined> = typeof process !== "undefined"
+    ? process.env
+    : {},
+  request: { killSwitch?: boolean; apiKey?: string } = {},
+): PolicyLimits {
+  return loadLimitsFromEnv(env, {
+    killSwitch: request.killSwitch,
+    lastExecuteAtMs: readLastExecuteAtMs(orgCooldownKey(request.apiKey)),
+  });
 }
 
 /**
@@ -115,15 +154,32 @@ export function assertAllowed(
       reason: `Asset ${intent.asset} is not allowlisted. USDS and sUSDS only.`,
     };
   }
-  const amount = parseAmount(intent.amountHuman);
-  if (amount === null) {
-    return { allow: false, reason: `Amount ${intent.amountHuman} is not a valid decimal.` };
+  const amount = parseHumanAmount(intent.amountHuman);
+  if (!amount.ok) {
+    return {
+      allow: false,
+      reason: `Amount ${intent.amountHuman} is not a valid decimal.`,
+    };
   }
-  if (amount > limits.maxAmountHuman) {
+  const capWei = capToWei(limits.maxAmountHuman);
+  if (capWei === null) {
+    return { allow: false, reason: "Policy cap is not a valid decimal." };
+  }
+  if (amount.wei > capWei) {
     return {
       allow: false,
       reason: `Amount ${intent.amountHuman} USDS exceeds cap ${limits.maxAmountHuman} USDS.`,
     };
+  }
+  if (WRITE_ACTIONS_NEED_RECEIVER.has(intent.actionType)) {
+    const receiver = intent.receiver?.trim();
+    if (!receiver || !ADDRESS_RE.test(receiver) || ZERO_ADDRESS_RE.test(receiver)) {
+      return {
+        allow: false,
+        reason:
+          "Receiver must be a non-zero address. Refusing 0x0 (ERC-4626 would mint or burn to the zero address).",
+      };
+    }
   }
   if (
     limits.lastExecuteAtMs !== undefined &&

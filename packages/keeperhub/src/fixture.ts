@@ -33,12 +33,27 @@ const SKY_ACTIONS: SkyActionSchema[] = [
     },
   },
   {
+    actionType: "sky/vault-redeem",
+    label: "Sky: Vault Redeem",
+    requiresCredentials: true,
+    requiredFields: {
+      network: "string",
+      shares: "string",
+      receiver: "string",
+      owner: "string",
+    },
+  },
+  {
     actionType: "sky/get-usds-balance",
     label: "Sky: Get USDS Balance",
     requiresCredentials: false,
     requiredFields: { network: "string", account: "string" },
   },
 ];
+
+function hasAction(workflow: Workflow, actionType: string): boolean {
+  return workflow.nodes.some((n) => n.data.config.actionType === actionType);
+}
 
 /**
  * Test / no-key adapter. Does not call KeeperHub.
@@ -68,10 +83,7 @@ export function createFixtureAdapter(opts?: {
           error: "Simulation would revert (fixture).",
         };
       }
-      const deposit = workflow.nodes.some(
-        (n) => n.data.config.actionType === "sky/vault-deposit",
-      );
-      if (deposit) {
+      if (hasAction(workflow, "sky/vault-deposit")) {
         return {
           ok: false,
           status: "would_revert",
@@ -80,6 +92,20 @@ export function createFixtureAdapter(opts?: {
             reason: "Org wallet holds 0 USDS; sUSDS deposit would revert.",
           }),
           error: "Insufficient USDS in org wallet for vault-deposit.",
+        };
+      }
+      if (
+        hasAction(workflow, "sky/vault-withdraw") ||
+        hasAction(workflow, "sky/vault-redeem")
+      ) {
+        return {
+          ok: false,
+          status: "would_revert",
+          wouldRevert: true,
+          detailsJson: JSON.stringify({
+            reason: "Org wallet holds 0 sUSDS; withdraw/redeem would revert.",
+          }),
+          error: "Insufficient sUSDS in org wallet for withdraw/redeem.",
         };
       }
       return {
@@ -93,9 +119,7 @@ export function createFixtureAdapter(opts?: {
       } satisfies DryRunResult;
     },
     async execute(workflow) {
-      const deposit = workflow.nodes.some(
-        (n) => n.data.config.actionType === "sky/vault-deposit",
-      );
+      const deposit = hasAction(workflow, "sky/vault-deposit");
       if (deposit) {
         return {
           executionId: "fixture_deposit_blocked",
@@ -103,6 +127,18 @@ export function createFixtureAdapter(opts?: {
           transactions: [],
           rawJson: "{}",
           error: "Fixture will not pretend a sUSDS deposit landed. Fund USDS and use a live kh_ key.",
+        };
+      }
+      if (
+        hasAction(workflow, "sky/vault-withdraw") ||
+        hasAction(workflow, "sky/vault-redeem")
+      ) {
+        return {
+          executionId: "fixture_withdraw_blocked",
+          status: "error",
+          transactions: [],
+          rawJson: "{}",
+          error: "Fixture will not pretend a sUSDS withdraw landed. Fund sUSDS and use a live kh_ key.",
         };
       }
       return proven;
