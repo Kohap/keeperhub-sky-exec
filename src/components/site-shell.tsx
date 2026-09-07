@@ -27,6 +27,9 @@ export function SiteNav() {
         <Link to="/desk" className={navLink}>
           Desk
         </Link>
+        <Link to="/pitch" className={navLink}>
+          Pitch
+        </Link>
         <Link to="/faq" className={navLink}>
           FAQ
         </Link>
@@ -100,6 +103,11 @@ export function SiteFooter() {
             <li>
               <Link to="/desk" className={footLink}>
                 Desk
+              </Link>
+            </li>
+            <li>
+              <Link to="/pitch" className={footLink}>
+                Pitch
               </Link>
             </li>
             <li>

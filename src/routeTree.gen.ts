@@ -14,6 +14,7 @@ import { Route as SplatRouteImport } from './routes/$'
 import { Route as DeskRouteImport } from './routes/desk'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as LegalRouteImport } from './routes/legal'
+import { Route as PitchRouteImport } from './routes/pitch'
 import { Route as SocialRouteImport } from './routes/social'
 
 const IndexRoute = IndexRouteImport.update({
@@ -41,6 +42,11 @@ const LegalRoute = LegalRouteImport.update({
   path: '/legal',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PitchRoute = PitchRouteImport.update({
+  id: '/pitch',
+  path: '/pitch',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SocialRoute = SocialRouteImport.update({
   id: '/social',
   path: '/social',
@@ -53,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/desk': typeof DeskRoute
   '/faq': typeof FaqRoute
   '/legal': typeof LegalRoute
+  '/pitch': typeof PitchRoute
   '/social': typeof SocialRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +68,7 @@ export interface FileRoutesByTo {
   '/desk': typeof DeskRoute
   '/faq': typeof FaqRoute
   '/legal': typeof LegalRoute
+  '/pitch': typeof PitchRoute
   '/social': typeof SocialRoute
 }
 export interface FileRoutesById {
@@ -70,14 +78,16 @@ export interface FileRoutesById {
   '/desk': typeof DeskRoute
   '/faq': typeof FaqRoute
   '/legal': typeof LegalRoute
+  '/pitch': typeof PitchRoute
   '/social': typeof SocialRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$' | '/desk' | '/faq' | '/legal' | '/social'
+  fullPaths: '/' | '/$' | '/desk' | '/faq' | '/legal' | '/pitch' | '/social'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$' | '/desk' | '/faq' | '/legal' | '/social'
-  id: '__root__' | '/' | '/$' | '/desk' | '/faq' | '/legal' | '/social'
+  to: '/' | '/$' | '/desk' | '/faq' | '/legal' | '/pitch' | '/social'
+  id:
+    '__root__' | '/' | '/$' | '/desk' | '/faq' | '/legal' | '/pitch' | '/social'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -86,6 +96,7 @@ export interface RootRouteChildren {
   DeskRoute: typeof DeskRoute
   FaqRoute: typeof FaqRoute
   LegalRoute: typeof LegalRoute
+  PitchRoute: typeof PitchRoute
   SocialRoute: typeof SocialRoute
 }
 
@@ -126,6 +137,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LegalRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pitch': {
+      id: '/pitch'
+      path: '/pitch'
+      fullPath: '/pitch'
+      preLoaderRoute: typeof PitchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/social': {
       id: '/social'
       path: '/social'
@@ -142,6 +160,7 @@ const rootRouteChildren: RootRouteChildren = {
   DeskRoute: DeskRoute,
   FaqRoute: FaqRoute,
   LegalRoute: LegalRoute,
+  PitchRoute: PitchRoute,
   SocialRoute: SocialRoute,
 }
 export const routeTree = rootRouteImport
