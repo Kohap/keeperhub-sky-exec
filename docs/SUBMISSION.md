@@ -13,7 +13,7 @@ Incomplete submissions cannot be judged. Paste these three first:
 | Demo video | https://keeperhub-sky-exec.vercel.app/demo-90s.mp4 |
 | KeeperHub tx | https://etherscan.io/tx/0x28a94c68511a06e77f5e0c516e893335b6c18f17caead4de3a29421072c6cc04 |
 
-Demo: https://keeperhub-sky-exec.vercel.app/ · desk https://keeperhub-sky-exec.vercel.app/desk · pitch https://keeperhub-sky-exec.vercel.app/pitch
+Demo: https://keeperhub-sky-exec.vercel.app/ · desk https://keeperhub-sky-exec.vercel.app/desk · pitch https://keeperhub-sky-exec.vercel.app/pitch · mechanism https://keeperhub-sky-exec.vercel.app/docs
 
 ---
 

@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as DeskRouteImport } from './routes/desk'
+import { Route as DocsRouteImport } from './routes/docs'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as LegalRouteImport } from './routes/legal'
 import { Route as PitchRouteImport } from './routes/pitch'
@@ -30,6 +31,11 @@ const SplatRoute = SplatRouteImport.update({
 const DeskRoute = DeskRouteImport.update({
   id: '/desk',
   path: '/desk',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsRoute = DocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/desk': typeof DeskRoute
+  '/docs': typeof DocsRoute
   '/faq': typeof FaqRoute
   '/legal': typeof LegalRoute
   '/pitch': typeof PitchRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/desk': typeof DeskRoute
+  '/docs': typeof DocsRoute
   '/faq': typeof FaqRoute
   '/legal': typeof LegalRoute
   '/pitch': typeof PitchRoute
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/desk': typeof DeskRoute
+  '/docs': typeof DocsRoute
   '/faq': typeof FaqRoute
   '/legal': typeof LegalRoute
   '/pitch': typeof PitchRoute
@@ -83,17 +92,27 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$' | '/desk' | '/faq' | '/legal' | '/pitch' | '/social'
+  fullPaths:
+    '/' | '/$' | '/desk' | '/docs' | '/faq' | '/legal' | '/pitch' | '/social'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$' | '/desk' | '/faq' | '/legal' | '/pitch' | '/social'
+  to: '/' | '/$' | '/desk' | '/docs' | '/faq' | '/legal' | '/pitch' | '/social'
   id:
-    '__root__' | '/' | '/$' | '/desk' | '/faq' | '/legal' | '/pitch' | '/social'
+    | '__root__'
+    | '/'
+    | '/$'
+    | '/desk'
+    | '/docs'
+    | '/faq'
+    | '/legal'
+    | '/pitch'
+    | '/social'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SplatRoute: typeof SplatRoute
   DeskRoute: typeof DeskRoute
+  DocsRoute: typeof DocsRoute
   FaqRoute: typeof FaqRoute
   LegalRoute: typeof LegalRoute
   PitchRoute: typeof PitchRoute
@@ -121,6 +140,13 @@ declare module '@tanstack/react-router' {
       path: '/desk'
       fullPath: '/desk'
       preLoaderRoute: typeof DeskRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs': {
+      id: '/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -158,6 +184,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SplatRoute: SplatRoute,
   DeskRoute: DeskRoute,
+  DocsRoute: DocsRoute,
   FaqRoute: FaqRoute,
   LegalRoute: LegalRoute,
   PitchRoute: PitchRoute,

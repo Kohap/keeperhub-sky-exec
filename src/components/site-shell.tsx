@@ -30,6 +30,9 @@ export function SiteNav() {
         <Link to="/pitch" className={navLink}>
           Pitch
         </Link>
+        <Link to="/docs" className={navLink}>
+          Docs
+        </Link>
         <Link to="/faq" className={navLink}>
           FAQ
         </Link>
@@ -134,6 +137,11 @@ export function SiteFooter() {
               >
                 GitHub
               </a>
+            </li>
+            <li>
+              <Link to="/docs" className={footLink}>
+                Mechanism
+              </Link>
             </li>
             <li>
               <a href={PROVEN_RUN.txUrl} target="_blank" rel="noreferrer" className={footLink}>
