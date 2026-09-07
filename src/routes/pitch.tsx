@@ -40,7 +40,7 @@ const SLIDES = [
     title: "Compose, gate, simulate, then that graph",
     lead: "Nothing is inferred at execution time.",
     body: [
-      "observe → decide → policy → dry-run → KeeperHub execute → audit",
+      "compose → policy → dry-run → KeeperHub execute → audit",
       "Policy hides the cap (10 USDS), allowlisted Sky actions, chain 1, cooldown, and a kill switch.",
       "Dry-run is REST contract-call simulate. Execute is MCP execute_workflow. Same workflow id both times.",
     ],

@@ -11,16 +11,10 @@ const LINKS = [
     hint: "Gift on X.",
   },
   {
-    label: "GitHub",
-    handle: "Kohap",
-    href: "https://github.com/Kohap",
-    hint: "Source and the Sky Exec repo.",
-  },
-  {
     label: "Repo",
-    handle: "keeperhub-sky-exec",
+    handle: "Kohap/keeperhub-sky-exec",
     href: "https://github.com/Kohap/keeperhub-sky-exec",
-    hint: "This product.",
+    hint: "Source for this integration.",
   },
 ] as const;
 

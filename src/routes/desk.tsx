@@ -270,7 +270,7 @@ function Home() {
       {
         id: "compose",
         label: "Compose",
-        hint: last?.intent.actionType ?? "MCP workflow from the prompt",
+        hint: last?.intent.actionType ?? "Prompt → Sky workflow",
         state: last ? "done" : "idle",
       },
       {

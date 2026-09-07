@@ -33,12 +33,6 @@ export function SiteNav() {
         <Link to="/docs" className={navLink}>
           Docs
         </Link>
-        <Link to="/faq" className={navLink}>
-          FAQ
-        </Link>
-        <Link to="/social" className={navLink}>
-          Social
-        </Link>
       </div>
     </nav>
   );
@@ -65,9 +59,11 @@ export function SiteFrame({
 export function PageHero({
   title,
   children,
+  proof = false,
 }: {
   title: string;
   children?: ReactNode;
+  proof?: boolean;
 }) {
   return (
     <header className="mt-10">
@@ -84,14 +80,16 @@ export function PageHero({
           {children}
         </div>
       </div>
-      <a
-        href={PROVEN_RUN.txUrl}
-        target="_blank"
-        rel="noreferrer"
-        className="mt-5 block max-w-xl break-all font-mono text-xs leading-snug text-muted tabular-nums hover:text-accent"
-      >
-        {PROVEN_RUN.txHash}
-      </a>
+      {proof ? (
+        <a
+          href={PROVEN_RUN.txUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-5 block max-w-xl break-all font-mono text-xs leading-snug text-muted tabular-nums hover:text-accent"
+        >
+          {PROVEN_RUN.txHash}
+        </a>
+      ) : null}
     </header>
   );
 }
@@ -117,11 +115,6 @@ export function SiteFooter() {
               <Link to="/faq" className={footLink}>
                 FAQ
               </Link>
-            </li>
-            <li>
-              <a href={PROVEN_RUN.txUrl} target="_blank" rel="noreferrer" className={footLink}>
-                Recorded run
-              </a>
             </li>
           </ul>
         </div>

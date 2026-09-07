@@ -47,7 +47,7 @@ function pickClient(apiKey?: string): {
   return { kh: createFixtureAdapter(), mode: "fixture" };
 }
 
-/** Shared observe → policy → (dry-run) → (execute) path. MCP adapter unchanged. */
+/** Shared compose → policy → (dry-run) → (execute) path. MCP adapter unchanged. */
 export async function runPipeline(
   data: PipelineInput,
   stage: PipelineStage,

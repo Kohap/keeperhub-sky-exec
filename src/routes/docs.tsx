@@ -23,7 +23,7 @@ function DocsPage() {
     <SiteFrame>
       <div className="mx-auto min-h-dvh max-w-5xl px-4 py-3 sm:px-6 sm:py-4">
         <SiteNav />
-        <PageHero title="Mechanism">
+        <PageHero title="Mechanism" proof>
           <p className="mt-2 max-w-xl text-sm text-muted">
             The pipeline behind Policy check, Dry-run, and Execute. This is
             not the demo. The demo is the desk.

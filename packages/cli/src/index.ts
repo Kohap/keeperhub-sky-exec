@@ -66,7 +66,7 @@ async function main() {
   const audit = createJsonlAudit(resolve("data/audit.jsonl"));
   const workflow = workflowFromIntent(intent);
 
-  console.log("Sky Exec  ·  observe → decide → policy → dry-run → execute → audit");
+  console.log("Sky Exec  ·  compose → policy → dry-run → execute → audit");
   printDecision("intent", intent);
   printDecision("policy", policy);
 

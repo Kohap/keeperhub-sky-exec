@@ -17,7 +17,7 @@ const STEPS = [
   {
     n: "01",
     label: "Compose",
-    hint: "Agent or CLI writes a Sky sUSDS workflow on KeeperHub MCP.",
+    hint: "Prompt becomes a Sky sUSDS graph on KeeperHub. CLI or desk. Not an autonomous loop.",
   },
   {
     n: "02",
@@ -44,7 +44,7 @@ const FACTS = [
 ] as const;
 
 const MCP = [
-  "composeIntent",
+  "create_workflow",
   "validate_workflow",
   "contract-call simulate",
   "execute_workflow",

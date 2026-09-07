@@ -43,7 +43,7 @@ Baked copy: [`proof/keeperhub-run.json`](proof/keeperhub-run.json).
 ## Pipeline
 
 ```
-observe → decide → policy → dry-run → KeeperHub execute → audit
+compose → policy → dry-run → KeeperHub execute → audit
 ```
 
 | Module | Interface |
