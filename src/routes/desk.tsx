@@ -643,11 +643,11 @@ function Home() {
         </ol>
         <section className="rounded-lg bg-surface p-3">
           <h2 className="mb-1 text-xs font-medium text-muted">
-            MCP log
+            Run log
           </h2>
           {log.length === 0 ? (
             <p className="text-xs text-muted">
-              Empty. Run a policy check, dry-run, or execute.
+              Empty. Policy check, Dry-run, or Execute.
             </p>
           ) : (
             <ol>

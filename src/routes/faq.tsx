@@ -5,8 +5,8 @@ export const Route = createFileRoute("/faq")({ component: FaqPage });
 
 const FAQS = [
   {
-    q: "What is Sky Exec?",
-    a: "A Claude/MCP agent composes a Sky sUSDS deposit or withdraw workflow on KeeperHub. You review it, dry-run with no chain write, then that exact workflow executes. Sky is the live savings market. KeeperHub is the execution layer. This repo is the glue. The mechanism page is the depth.",
+    q: "What is on the other side?",
+    a: "Sky Protocol savings, USDS to sUSDS, Ethereum mainnet. KeeperHub executes. This repo is the glue: compose, policy, dry-run, audit. Not a new market.",
   },
   {
     q: "Is the hash on the home page a new broadcast?",
@@ -36,7 +36,7 @@ const FAQS = [
 
 function FaqPage() {
   return (
-    <SiteFrame>
+    <SiteFrame wash={false}>
     <div className="mx-auto min-h-dvh max-w-5xl px-4 py-3 sm:px-6 sm:py-4">
       <SiteNav />
       <PageHero title="FAQ">

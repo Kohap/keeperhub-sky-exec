@@ -1,16 +1,15 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { Github } from "lucide-react";
 import { PROVEN_RUN } from "../../packages/keeperhub/src/proof.ts";
 import { SvStage } from "@/components/sv-stage";
 
 const navLink = "inline-flex min-h-8 items-center text-muted hover:text-accent";
 const footLink =
-  "inline-flex min-h-11 items-center text-sm text-fg/90 hover:text-accent";
+  "inline-flex min-h-11 items-center text-sm text-muted hover:text-accent";
 
 export function SiteNav() {
   return (
-    <nav className="flex items-center justify-between gap-2 rounded-full bg-surface-2 px-3 py-2 sm:gap-3 sm:px-4">
+    <nav className="flex items-center justify-between gap-3 py-1">
       <Link to="/" className="flex min-h-8 min-w-0 items-center gap-2">
         <img
           src="/logo.png"
@@ -23,7 +22,7 @@ export function SiteNav() {
           Sky Exec
         </span>
       </Link>
-      <div className="flex shrink-0 items-center gap-2.5 text-xs sm:gap-5 sm:text-sm">
+      <div className="flex shrink-0 items-center gap-3 text-xs sm:gap-5 sm:text-sm">
         <Link to="/desk" className={navLink}>
           Desk
         </Link>
@@ -40,17 +39,21 @@ export function SiteNav() {
 
 export function SiteFrame({
   children,
+  wash = true,
 }: {
   children: ReactNode;
+  wash?: boolean;
 }) {
   return (
     <div className="relative min-h-dvh">
-      <SvStage>
-        <div className="sv-orbit">
-          <div className="sv-plane" />
-        </div>
-        <div className="sv-veil bg-gradient-to-r from-bg via-bg/82 to-bg/25 sm:via-bg/70 sm:to-bg/15" />
-      </SvStage>
+      {wash ? (
+        <SvStage>
+          <div className="sv-orbit">
+            <div className="sv-plane" />
+          </div>
+          <div className="sv-veil bg-gradient-to-r from-bg via-bg/82 to-bg/25 sm:via-bg/70 sm:to-bg/15" />
+        </SvStage>
+      ) : null}
       <div className="relative z-10">{children}</div>
     </div>
   );
@@ -67,19 +70,8 @@ export function PageHero({
 }) {
   return (
     <header className="mt-10">
-      <div className="flex items-end gap-4">
-        <img
-          src="/logo.png"
-          alt=""
-          width={56}
-          height={56}
-          className="size-14 rounded-lg"
-        />
-        <div className="min-w-0">
-          <h1 className="font-display text-3xl tracking-display">{title}</h1>
-          {children}
-        </div>
-      </div>
+      <h1 className="font-display text-3xl tracking-display">{title}</h1>
+      {children}
       {proof ? (
         <a
           href={PROVEN_RUN.txUrl}
@@ -96,117 +88,43 @@ export function PageHero({
 
 export function SiteFooter() {
   return (
-    <footer className="mt-12 text-sm text-muted sm:mt-20">
-      <div className="relative z-10 grid grid-cols-2 gap-x-6 gap-y-8 lg:grid-cols-4 lg:gap-10 border-t border-border/80 pt-10 sm:pt-12">
-        <div className="min-w-0">
-          <p className="text-xs text-subtle">Product</p>
-          <ul className="mt-4 flex flex-col">
-            <li>
-              <Link to="/desk" className={footLink}>
-                Desk
-              </Link>
-            </li>
-            <li>
-              <Link to="/pitch" className={footLink}>
-                Pitch
-              </Link>
-            </li>
-            <li>
-              <Link to="/faq" className={footLink}>
-                FAQ
-              </Link>
-            </li>
-          </ul>
-        </div>
-        <div className="min-w-0">
-          <p className="text-xs text-subtle">Developers</p>
-          <ul className="mt-4 flex flex-col">
-            <li>
-              <a
-                href="https://github.com/Kohap/keeperhub-sky-exec"
-                target="_blank"
-                rel="noreferrer"
-                className={footLink}
-              >
-                GitHub
-              </a>
-            </li>
-            <li>
-              <Link to="/docs" className={footLink}>
-                Mechanism
-              </Link>
-            </li>
-            <li>
-              <a href={PROVEN_RUN.txUrl} target="_blank" rel="noreferrer" className={footLink}>
-                Etherscan
-              </a>
-            </li>
-            <li>
-              <a
-                href={PROVEN_RUN.approveWorkflowUrl}
-                target="_blank"
-                rel="noreferrer"
-                className={footLink}
-              >
-                KeeperHub workflow
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div className="min-w-0">
-          <p className="text-xs text-subtle">Legal</p>
-          <ul className="mt-4 flex flex-col">
-            <li>
-              <Link to="/legal" className={footLink}>
-                Legal
-              </Link>
-            </li>
-            <li>
-              <Link to="/legal" hash="privacy" className={footLink}>
-                Privacy
-              </Link>
-            </li>
-            <li>
-              <Link to="/legal" hash="terms" className={footLink}>
-                Terms
-              </Link>
-            </li>
-          </ul>
-        </div>
-        <div className="min-w-0">
-          <p className="text-sm font-medium text-fg">Trust and Social</p>
-          <div className="mt-4 flex items-center gap-4">
-            <a
-              href="https://github.com/Kohap/keeperhub-sky-exec"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex size-11 items-center justify-center text-fg hover:text-accent"
-              aria-label="GitHub"
-            >
-              <Github className="size-5" />
-            </a>
-            <Link to="/social" className="inline-flex min-h-11 items-center text-sm font-medium text-fg hover:text-accent">
-              Social
-            </Link>
-          </div>
-          <p className="mt-3 max-w-xs text-sm font-medium leading-snug text-fg">
-            The code is open source. Auditing questions and KeeperHub
-            integration notes are on GitHub.
-          </p>
-        </div>
+    <footer className="mt-16 border-t border-border pt-6 text-sm text-muted sm:mt-20">
+      <div className="flex flex-wrap gap-x-5 gap-y-1">
+        <Link to="/desk" className={footLink}>
+          Desk
+        </Link>
+        <Link to="/pitch" className={footLink}>
+          Pitch
+        </Link>
+        <Link to="/docs" className={footLink}>
+          Docs
+        </Link>
+        <Link to="/faq" className={footLink}>
+          FAQ
+        </Link>
+        <Link to="/legal" className={footLink}>
+          Legal
+        </Link>
+        <a
+          href="https://github.com/Kohap/keeperhub-sky-exec"
+          target="_blank"
+          rel="noreferrer"
+          className={footLink}
+        >
+          GitHub
+        </a>
       </div>
-      <div className="relative z-10 mt-10 border-t border-border/80 py-6 text-center sm:mt-12">
-        <p>© 2026 Gift</p>
-        <div className="mt-3 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs">
-          <a href={PROVEN_RUN.txUrl} target="_blank" rel="noreferrer" className="hover:text-accent">
-            View transaction
-          </a>
-          <Link to="/desk" className="hover:text-accent">
-            Desk
-          </Link>
-          <span>Ethereum mainnet</span>
-        </div>
-      </div>
+      <p className="mt-4 font-mono text-xs leading-snug">
+        © 2026 Gift · Sky approve 0 USDS ·{" "}
+        <a
+          href={PROVEN_RUN.txUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="break-all text-fg tabular-nums hover:text-accent"
+        >
+          {PROVEN_RUN.txHash}
+        </a>
+      </p>
     </footer>
   );
 }

@@ -20,7 +20,7 @@ const LINKS = [
 
 function SocialPage() {
   return (
-    <SiteFrame>
+    <SiteFrame wash={false}>
     <div className="mx-auto min-h-dvh max-w-5xl px-4 py-3 sm:px-6 sm:py-4">
       <SiteNav />
       <PageHero title="Social">

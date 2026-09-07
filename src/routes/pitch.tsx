@@ -102,13 +102,13 @@ const SLIDES = [
     ],
   },
   {
-    kicker: "09 / 09 · Ask",
-    title: "Judge the integration, not the gradient",
-    lead: "Track: Main — Best Integration into a Live Project. Not the bounty.",
+    kicker: "09 / 09 · Track",
+    title: "Main — Best Integration into a Live Project",
+    lead: "Sky is the live project. Not the bounty. Not a standalone demo.",
     body: [
       "Open the desk. Policy check, Dry-run, Execute, then Policy reject.",
-      "Form pack: docs/SUBMISSION.md. Video is already hosted.",
-      "Feedback welcome on the 0-approve honesty and the MCP/REST dry-run seam.",
+      "Form: GitHub, video, Etherscan hash. Pack in docs/SUBMISSION.md.",
+      "The live write is sky/approve-usds amount 0. Savings did not move.",
     ],
   },
 ] as const;
