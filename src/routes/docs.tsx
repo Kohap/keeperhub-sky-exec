@@ -116,9 +116,11 @@ function DocsPage() {
             <h2 className="text-base font-medium text-fg">Policy</h2>
             <p className="mt-3">
               <code className="font-mono text-fg">assertAllowed</code> is
-              deterministic. Kill switch, chain 1, Sky action allowlist, USDS
-              or sUSDS, amount ≤ 10, 30s cooldown. Reject never calls execute.
-              Failure path: deposit 100 USDS.
+              deterministic. Order: kill switch, chain 1, Sky action
+              allowlist, USDS or sUSDS, amount ≤ 10, 30s cooldown. The desk
+              button Policy check is compose plus this function. It does not
+              call MCP. Reject skips Dry-run and Execute. Failure path:
+              deposit 100 USDS.
             </p>
           </section>
 

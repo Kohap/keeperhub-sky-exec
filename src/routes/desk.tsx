@@ -57,7 +57,9 @@ function stageMessage(
       : "Execute succeeded.";
   if (last.dryRun?.ok)
     return `Dry-run ok · gas ${last.dryRun.gasEstimate ?? "n/a"}`;
-  if (last.policy.allow) return "Policy allow";
+  if (last.policy.allow) {
+    return `Policy allow · ${last.intent.actionType} · ${last.intent.amountHuman} ${last.intent.asset} · no chain`;
+  }
   return last.error ?? "";
 }
 
@@ -360,10 +362,12 @@ function Home() {
       </header>
 
       <p className="font-mono text-2xs leading-snug text-muted">
-        Policy · cap {limits.maxAmountHuman} USDS · {ALLOWED_ASSETS.join("/")} ·
-        chain {limits.chainId} · cooldown {limits.cooldownSeconds}s
-        {killSwitch ? " · KILL_SWITCH" : ""}
-        {cooldownLeft > 0 ? ` · cooling ${cooldownLeft}s` : ""}
+        Policy check is local. Kill switch, then chain {limits.chainId}, then
+        Sky actions only, then {ALLOWED_ASSETS.join("/")}, then cap{" "}
+        {limits.maxAmountHuman} USDS, then cooldown {limits.cooldownSeconds}s.
+        It does not call KeeperHub. Reject skips Dry-run and Execute.
+        {killSwitch ? " KILL_SWITCH is on." : ""}
+        {cooldownLeft > 0 ? ` Cooling ${cooldownLeft}s.` : ""}
       </p>
 
       {fixtureBanner ? (
@@ -546,6 +550,21 @@ function Home() {
               Execute
             </Button>
           </div>
+          {last ? (
+            <p
+              className={cn(
+                "mt-2 rounded-md px-3 py-2 font-mono text-2xs leading-snug",
+                last.policy.allow ? "text-ok" : "text-danger",
+              )}
+            >
+              Policy {last.policy.allow ? "allow" : "reject"} ·{" "}
+              {last.intent.actionType} · {last.intent.amountHuman}{" "}
+              {last.intent.asset} · chain {last.intent.chainId}
+              {last.policy.allow
+                ? " · local, no KeeperHub call"
+                : ` · ${last.policy.reason}`}
+            </p>
+          ) : null}
           {last?.dryRun ? (
             <p
               className={cn(
@@ -559,10 +578,12 @@ function Home() {
             </p>
           ) : null}
           <p className="mt-2 text-xs leading-snug text-muted">
-            Confirm Execute: this calls KeeperHub{" "}
-            <span className="font-mono">execute_workflow</span> on the composed
-            Sky approve. Dry-run first. Fixture replays the recorded hash. It
-            is not a new broadcast.
+            Confirm Policy check: compose the prompt, then{" "}
+            <span className="font-mono">assertAllowed</span>. No MCP, no
+            chain. Confirm Execute: KeeperHub{" "}
+            <span className="font-mono">execute_workflow</span> on that Sky
+            graph. Dry-run first. Fixture replays the recorded hash. It is not
+            a new broadcast.
           </p>
           <p
             role="status"

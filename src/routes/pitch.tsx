@@ -51,7 +51,7 @@ const SLIDES = [
     lead: "Labels on the desk: Policy check · Dry-run · Execute",
     body: [
       "1. Prompt: approve 0 USDS for the sUSDS vault → action sky/approve-usds.",
-      "2. Policy check: allow, or reject 100 USDS over cap. Reject never hits chain.",
+      "2. Policy check is local: kill switch, chain 1, Sky action, asset, cap 10, cooldown. Reject never hits chain.",
       "3. Dry-run: wouldRevert false, gas on the confirm strip. No funds move.",
       "4. Execute: MCP run r7grdajtci7hf757zd9xr. Fixture mode replays the recorded hash.",
       "5. Kill switch is the other failure path.",

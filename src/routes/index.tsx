@@ -22,7 +22,7 @@ const STEPS = [
   {
     n: "02",
     label: "Policy check",
-    hint: "Cap 10 USDS, allowlist, cooldown, kill switch. Reject never hits chain.",
+    hint: "Local assertAllowed: kill switch, chain 1, Sky actions, USDS/sUSDS, cap 10, cooldown. No KeeperHub. Reject never hits chain.",
   },
   {
     n: "03",

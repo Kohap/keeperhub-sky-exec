@@ -18,7 +18,7 @@ const FAQS = [
   },
   {
     q: "What are the policy gates?",
-    a: "Cap 10 USDS, USDS and sUSDS only, Ethereum (chain 1), 30s cooldown, kill switch. A policy reject never hits chain. Deposit 100 USDS is the failure path.",
+    a: "Policy check is local assertAllowed. Order: kill switch, chain 1, Sky actions only, USDS/sUSDS, cap 10 USDS, 30s cooldown. It does not call KeeperHub. A reject never hits chain. Deposit 100 USDS is the failure path.",
   },
   {
     q: "Is the KeeperHub workflow page part of Sky?",
