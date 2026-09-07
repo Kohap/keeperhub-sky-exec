@@ -1,4 +1,8 @@
-# 90-second video script
+# 90-second video
+
+**Ready for the DoraHacks form:** https://keeperhub-sky-exec.vercel.app/demo-90s.mp4
+
+Same file in-repo: [`docs/demo-90s.mp4`](demo-90s.mp4) and [`public/demo-90s.mp4`](../public/demo-90s.mp4).
 
 On screen: Sky Exec landing → **Open the desk**. Clock starts after the desk is up.
 
@@ -26,15 +30,6 @@ Prompt: `deposit spare USDS above 100 into sUSDS`
 Policy reject: amount 100 exceeds cap 10 USDS. Audit row `reject`. Optionally flip `KILL_SWITCH` and show execute blocked.
 
 **1:25–1:30 — close**
-Point at [github.com/Kohap/keeperhub-sky-exec](https://github.com/Kohap/keeperhub-sky-exec), run URL, explorer hash. Stop.
+Point at [github.com/Kohap/keeperhub-sky-exec](https://github.com/Kohap/keeperhub-sky-exec) and the explorer hash. Stop.
 
-Capture in-repo: [`docs/demo-90s.mp4`](demo-90s.mp4). Re-record with `node scripts/record-90s.mjs` while `npm run dev` is on :8080.
-
-## Before recording — GitHub
-
-DoraHacks needs that public source URL live. Create the empty repo, then push:
-
-1. [Create `Kohap/keeperhub-sky-exec` (public, no README)](https://github.com/new?name=keeperhub-sky-exec&visibility=public)
-2. `bash scripts/publish-github.sh`
-
-Full create + push commands: README § GitHub.
+Re-record (dev on :8080): `node scripts/record-90s.mjs`

@@ -13,7 +13,7 @@ This repo is the **agent + policy + dry-run + audit glue**. Sky Protocol is the 
 | Required | URL |
 | --- | --- |
 | GitHub | https://github.com/Kohap/keeperhub-sky-exec |
-| Video | [docs/demo-90s.mp4](https://github.com/Kohap/keeperhub-sky-exec/blob/main/docs/demo-90s.mp4) |
+| Video | https://keeperhub-sky-exec.vercel.app/demo-90s.mp4 |
 | KeeperHub tx | [0x28a94c…cc04](https://etherscan.io/tx/0x28a94c68511a06e77f5e0c516e893335b6c18f17caead4de3a29421072c6cc04) on Ethereum, via MCP `execute_workflow` `r7grdajtci7hf757zd9xr` |
 
 Desk: [keeperhub-sky-exec.vercel.app/desk](https://keeperhub-sky-exec.vercel.app/desk). Live project on the other side: **Sky (USDS/sUSDS)**, not this UI.
@@ -65,7 +65,7 @@ Policy hides: max amount (default 10 USDS), allowlisted action types, allowliste
 6. Explorer hash on Ethereum. Fixture labels say **recorded**.
 7. Failure path: **Policy reject** or `npm run compose -- "deposit spare USDS above 100 into sUSDS"` → **policy reject** (100 > cap 10). Toggle `KILL_SWITCH` to see the other reject.
 
-Script: [`docs/VIDEO.md`](docs/VIDEO.md). Capture: [`docs/demo-90s.mp4`](docs/demo-90s.mp4).
+Script: [`docs/VIDEO.md`](docs/VIDEO.md). Capture: https://keeperhub-sky-exec.vercel.app/demo-90s.mp4
 
 ## CLI
 

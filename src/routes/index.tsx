@@ -67,7 +67,7 @@ function Landing() {
               A Claude/MCP agent composes a Sky sUSDS workflow. You gate it,
               dry-run with no chain write, then that exact graph executes.
             </p>
-            <div className="mt-4">
+            <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
               <Link
                 to="/desk"
                 className={cn(
@@ -77,6 +77,12 @@ function Landing() {
               >
                 <span className="relative z-10">Open the desk</span>
               </Link>
+              <a
+                href="/demo-90s.mp4"
+                className="inline-flex min-h-11 items-center text-sm text-muted hover:text-accent"
+              >
+                90s demo
+              </a>
             </div>
           </div>
           <dl className="grid max-w-3xl grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4 sm:gap-x-6">

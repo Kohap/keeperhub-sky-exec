@@ -1,7 +1,8 @@
 import { chromium } from "playwright";
-import { mkdirSync } from "node:fs";
+import { copyFileSync, mkdirSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 
-const url = "http://127.0.0.1:8080/";
+const url = process.env.DEMO_URL ?? "http://127.0.0.1:8080/";
 const outDir = "/tmp/pw-video";
 mkdirSync(outDir, { recursive: true });
 
@@ -12,22 +13,50 @@ const context = await browser.newContext({
 });
 const page = await context.newPage();
 await page.goto(url, { waitUntil: "networkidle" });
-await page.waitForTimeout(12000); // 0:00–0:12 one-liner + hash
+await page.waitForTimeout(8000);
+await page.getByRole("link", { name: "Open the desk" }).click();
+await page.waitForURL("**/desk");
+await page.waitForTimeout(2500);
 await page.getByRole("button", { name: "Success path" }).click();
-await page.waitForTimeout(1500);
-await page.getByRole("button", { name: "Policy check" }).click();
-await page.waitForTimeout(14000); // 0:12–0:28
-await page.getByRole("button", { name: "Dry-run" }).click();
-await page.waitForTimeout(20000); // 0:28–0:48
-await page.getByRole("button", { name: "Execute" }).click();
-await page.waitForTimeout(22000); // 0:48–1:10
-await page.getByRole("button", { name: "Policy reject" }).click();
 await page.waitForTimeout(800);
 await page.getByRole("button", { name: "Policy check" }).click();
-await page.waitForTimeout(15000); // 1:10–1:25
-await page.waitForTimeout(5000); // close
+await page.waitForTimeout(8000);
+await page.getByRole("button", { name: "Dry-run" }).click();
+await page.waitForTimeout(10000);
+await page.getByRole("button", { name: "Execute" }).click();
+await page.waitForTimeout(12000);
+await page.getByRole("button", { name: "Policy reject" }).click();
+await page.waitForTimeout(600);
+await page.getByRole("button", { name: "Policy check" }).click();
+await page.waitForTimeout(10000);
 const video = page.video();
 await context.close();
-const path = video ? await video.path() : null;
+const webm = video ? await video.path() : null;
 await browser.close();
-console.log(JSON.stringify({ path }));
+if (!webm) {
+  throw new Error("Playwright did not write a video");
+}
+const mp4 = "/workspace/docs/demo-90s.mp4";
+const pub = "/workspace/public/demo-90s.mp4";
+const ff = spawnSync(
+  "ffmpeg",
+  [
+    "-y",
+    "-i",
+    webm,
+    "-c:v",
+    "libx264",
+    "-pix_fmt",
+    "yuv420p",
+    "-movflags",
+    "+faststart",
+    "-an",
+    mp4,
+  ],
+  { stdio: "inherit" },
+);
+if (ff.status !== 0) {
+  copyFileSync(webm, mp4);
+}
+copyFileSync(mp4, pub);
+console.log(JSON.stringify({ webm, mp4, pub }));
