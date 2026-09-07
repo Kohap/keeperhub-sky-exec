@@ -10,7 +10,7 @@ export const Route = createFileRoute("/pitch")({ component: PitchPage });
 const TX = PROVEN_RUN.txUrl;
 const HASH = PROVEN_RUN.txHash;
 const DESK = "https://keeperhub-sky-exec.vercel.app/desk";
-const VIDEO = "https://keeperhub-sky-exec.vercel.app/demo-90s.mp4";
+const VIDEO = "https://youtu.be/_jNeXn85wI0";
 const GH = "https://github.com/Kohap/keeperhub-sky-exec";
 const VAULT = "0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD";
 
@@ -193,8 +193,13 @@ function PitchPage() {
                 ) : null}
                 {i === 8 ? (
                   <>
-                    <a href={VIDEO} className="text-sm text-muted hover:text-accent">
-                      90s demo
+                    <a
+                      href={VIDEO}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-sm text-muted hover:text-accent"
+                    >
+                      Demo
                     </a>
                     <a
                       href={GH}

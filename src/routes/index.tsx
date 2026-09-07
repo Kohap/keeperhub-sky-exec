@@ -78,10 +78,12 @@ function Landing() {
                 <span className="relative z-10">Open the desk</span>
               </Link>
               <a
-                href="/demo-90s.mp4"
+                href="https://youtu.be/_jNeXn85wI0"
+                target="_blank"
+                rel="noreferrer"
                 className="inline-flex min-h-11 items-center text-sm text-muted hover:text-accent"
               >
-                90s demo
+                Demo
               </a>
             </div>
           </div>

@@ -1,35 +1,20 @@
-# 90-second video
+# Demo video
 
-**Ready for the DoraHacks form:** https://keeperhub-sky-exec.vercel.app/demo-90s.mp4
+**DoraHacks form:** https://youtu.be/_jNeXn85wI0
 
-Same file in-repo: [`docs/demo-90s.mp4`](demo-90s.mp4) and [`public/demo-90s.mp4`](../public/demo-90s.mp4).
+Desk capture of Sky Exec. Empty key = fixture. Hash is the recorded KeeperHub execute, not a new broadcast.
 
-On screen: Sky Exec landing → **Open the desk**. Clock starts after the desk is up.
+**0:00 — recorded write**
+Sky approve 0 USDS for the sUSDS vault on Ethereum. Not a deposit. Not a mock. Open Etherscan on `0x28a94c68511a06e77f5e0c516e893335b6c18f17caead4de3a29421072c6cc04`.
 
-**0:00–0:12 — one-liner**
-> Sky Protocol is the live savings market. KeeperHub is the execution layer. This agent composes a Sky sUSDS workflow, I gate it, dry-run it, then KeeperHub runs that exact graph.
+**0:31 — failure path**
+Prompt: `deposit spare USDS above 100 into sUSDS`. **Policy check**. Reject. Amount 100 exceeds cap 10 USDS. Dry-run and Execute never run.
 
-Show the recorded run id and Etherscan hash already at the top of the page.
+**0:56 — success path**
+Prompt: `approve 0 USDS for the sUSDS vault`. **Policy check**. Allow. `sky/approve-usds` · 0 USDS.
 
-**0:12–0:28 — compose**
-Type: `approve 0 USDS for the sUSDS vault`
-Click **Policy check**. Allow. Action `sky/approve-usds`, chain 1, amount 0.
+**1:20 — dry-run**
+**Dry-run**. `wouldRevert false` · gas 31454 · no chain write.
 
-**0:28–0:48 — dry-run**
-Click **Dry-run**. No funds move. `status: simulated`, `wouldRevert: false`, gas estimate visible.
-
-**0:48–1:10 — execute**
-Click **Execute**. Paste `kh_` only if this take is live; otherwise cut to the already-mined run.
-
-Show:
-- KeeperHub execution `r7grdajtci7hf757zd9xr`
-- Tx `0x28a94c68511a06e77f5e0c516e893335b6c18f17caead4de3a29421072c6cc04` on Etherscan (USDS Approval)
-
-**1:10–1:25 — failure path**
-Prompt: `deposit spare USDS above 100 into sUSDS`
-Policy reject: amount 100 exceeds cap 10 USDS. Audit row `reject`. Optionally flip `KILL_SWITCH` and show execute blocked.
-
-**1:25–1:30 — close**
-Point at [github.com/Kohap/keeperhub-sky-exec](https://github.com/Kohap/keeperhub-sky-exec) and the explorer hash. Stop.
-
-Re-record (dev on :8080): `node scripts/record-90s.mjs`
+**1:35 — execute**
+**Execute** with empty key. Replays the recorded hash. Last run labeled recorded. Fixture desk, live Sky actions, Ethereum mainnet.

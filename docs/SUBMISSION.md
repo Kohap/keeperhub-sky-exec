@@ -10,7 +10,7 @@ Incomplete submissions cannot be judged. Paste these three first:
 | Required | Paste |
 | --- | --- |
 | Source | https://github.com/Kohap/keeperhub-sky-exec |
-| Demo video | https://keeperhub-sky-exec.vercel.app/demo-90s.mp4 |
+| Demo video | https://youtu.be/_jNeXn85wI0 |
 | KeeperHub tx | https://etherscan.io/tx/0x28a94c68511a06e77f5e0c516e893335b6c18f17caead4de3a29421072c6cc04 |
 
 Demo: https://keeperhub-sky-exec.vercel.app/ · desk https://keeperhub-sky-exec.vercel.app/desk · pitch https://keeperhub-sky-exec.vercel.app/pitch · mechanism https://keeperhub-sky-exec.vercel.app/docs
