@@ -130,4 +130,5 @@ scripts/publish-github.sh  create empty GitHub repo (if allowed) + push main
 
 ## License
 
-MIT
+Copyright © 2026 Gift. All rights reserved. Proprietary — not MIT.
+See [`LICENSE`](LICENSE). Sky Protocol and KeeperHub stay theirs.

@@ -30,7 +30,7 @@ const FAQS = [
   },
   {
     q: "Who owns this?",
-    a: "Copyright 2026 Gift. Sky Protocol and KeeperHub are not Gift's products. This is a DoraHacks integration into those live systems.",
+    a: "Copyright 2026 Gift. All rights reserved. Proprietary, not MIT. Sky Protocol and KeeperHub are not Gift's products. This is a DoraHacks integration into those live systems.",
   },
 ] as const;
 

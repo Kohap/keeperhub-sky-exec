@@ -8,7 +8,7 @@
     "url": "git+https://github.com/Kohap/keeperhub-sky-exec.git"
   },
   "homepage": "https://github.com/Kohap/keeperhub-sky-exec",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "overrides": {
     "nf3": "0.3.17"
   },

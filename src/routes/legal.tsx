@@ -17,8 +17,11 @@ function LegalPage() {
         <section>
           <h2 className="text-base font-medium text-fg">Copyright</h2>
           <p className="mt-2">
-            © 2026 Gift. All rights reserved. Sky Exec, this repository, and
-            original UI, policy glue, and audit trail are Gift's.
+            © 2026 Gift. All rights reserved. Sky Exec is proprietary. It is
+            not MIT and is not licensed for copy, modification, or
+            redistribution. This repository, original UI, policy glue, and
+            audit trail are Gift's. Viewing the source for DoraHacks judging
+            does not grant reuse.
           </p>
         </section>
         <section>

@@ -40,7 +40,7 @@ Mainnet. Sky plugin has no testnet actions. Amount was **0 USDS approve** so no 
 
 **Reachable contact**
 
-Fill on the form: email + X or Discord. In-repo copyright: Gift, 2026.
+Fill on the form: email + X or Discord. In-repo copyright: Gift, 2026. Proprietary, not MIT.
 
 ---
 
